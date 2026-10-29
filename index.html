@@ -6,27 +6,28 @@
     <title>TradePilot AI - XAUUSD Sniper Terminal</title>
     <style>
         :root {
-            --bg-color: #0b0e14;
-            --panel-bg: #131722;
-            --border-color: #2a2e39;
-            --text-main: #d1d4dc;
-            --text-muted: #787b86;
-            --accent-buy: #089981;
-            --accent-sell: #f23645;
-            --accent-gold: #f59e0b;
+            --bg-color: #07090e;
+            --panel-bg: #11151c;
+            --border-color: #262b36;
+            --text-main: #f0f3f9;
+            --text-muted: #848e9c;
+            --accent-buy: #0ecb81;
+            --accent-sell: #f6465d;
+            --accent-gold: #f0b90b;
+            --accent-glow: rgba(240, 185, 11, 0.4);
         }
 
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-main);
-            padding: 12px;
+            padding: 10px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -35,28 +36,29 @@
 
         .terminal-container {
             width: 100%;
-            max-width: 480px;
+            max-width: 440px;
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.7);
         }
 
-        /* Top Bar / MT5 Header */
+        /* Header */
         .mt5-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 14px;
-            background: #1e222d;
+            padding: 12px 16px;
+            background: #181c25;
             border-bottom: 1px solid var(--border-color);
         }
 
         .symbol-info h1 {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: 800;
             color: #fff;
+            letter-spacing: 0.5px;
         }
 
         .symbol-info span {
@@ -65,32 +67,40 @@
         }
 
         .candle-countdown {
-            background: rgba(245, 158, 11, 0.15);
+            background: rgba(240, 185, 11, 0.12);
             color: var(--accent-gold);
-            padding: 4px 8px;
-            border-radius: 4px;
+            padding: 5px 10px;
+            border-radius: 6px;
             font-size: 12px;
-            font-weight: 600;
+            font-weight: 700;
             font-family: monospace;
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            border: 1px solid rgba(240, 185, 11, 0.3);
+            animation: pulseGlow 2s infinite;
         }
 
-        /* Ticker Pricing Stream */
+        @keyframes pulseGlow {
+            0% { box-shadow: 0 0 0 0 rgba(240, 185, 11, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(240, 185, 11, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(240, 185, 11, 0); }
+        }
+
+        /* Live Prices */
         .ticker-panel {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 10px;
             padding: 12px;
-            background: #161a25;
+            background: #0d1117;
             border-bottom: 1px solid var(--border-color);
         }
 
         .price-box {
-            background: #1e222d;
-            padding: 8px;
-            border-radius: 6px;
+            background: #181c25;
+            padding: 10px;
+            border-radius: 8px;
             text-align: center;
             border: 1px solid var(--border-color);
+            transition: transform 0.2s;
         }
 
         .price-box.sell { border-top: 3px solid var(--accent-sell); }
@@ -100,72 +110,94 @@
             font-size: 10px;
             color: var(--text-muted);
             text-transform: uppercase;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .price-box .value {
             font-size: 18px;
-            font-weight: 700;
+            font-weight: 800;
             font-family: monospace;
-            margin-top: 2px;
+            margin-top: 4px;
             color: #fff;
         }
 
-        /* Scanner Action Board */
+        /* AI Animated Scanner Section */
         .scanner-section {
-            padding: 14px;
+            padding: 16px;
         }
 
         .status-banner {
-            padding: 10px;
-            border-radius: 6px;
+            padding: 12px;
+            border-radius: 8px;
             font-size: 12px;
             text-align: center;
-            font-weight: 600;
-            margin-bottom: 12px;
+            font-weight: 700;
+            margin-bottom: 14px;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            transition: all 0.3s ease;
         }
 
-        .status-idle { background: #2a2e39; color: var(--text-muted); }
-        .status-scanning { background: rgba(245, 158, 11, 0.2); color: var(--accent-gold); border: 1px dashed var(--accent-gold); }
-        .status-locked { background: rgba(242, 54, 69, 0.2); color: var(--accent-sell); border: 1px solid var(--accent-sell); }
-        .status-success { background: rgba(8, 153, 129, 0.2); color: var(--accent-buy); border: 1px solid var(--accent-buy); }
+        .status-idle { background: #1f242d; color: var(--text-muted); }
+        
+        .status-scanning { 
+            background: rgba(240, 185, 11, 0.15); 
+            color: var(--accent-gold); 
+            border: 1px solid var(--accent-gold);
+            animation: scannerPulse 1s infinite alternate;
+        }
+
+        @keyframes scannerPulse {
+            from { opacity: 0.6; }
+            to { opacity: 1; transform: scale(1.01); }
+        }
+
+        .status-locked { background: rgba(246, 70, 93, 0.15); color: var(--accent-sell); border: 1px solid var(--accent-sell); }
+        .status-success { background: rgba(14, 203, 129, 0.15); color: var(--accent-buy); border: 1px solid var(--accent-buy); }
 
         .btn-scan {
             width: 100%;
-            background: linear-gradient(135deg, #2962ff, #1e40af);
-            color: white;
+            background: linear-gradient(135deg, #f0b90b, #d99a00);
+            color: #000;
             border: none;
-            padding: 12px;
+            padding: 14px;
             font-size: 14px;
-            font-weight: 700;
-            border-radius: 6px;
+            font-weight: 800;
+            border-radius: 8px;
             cursor: pointer;
-            transition: opacity 0.2s;
             text-transform: uppercase;
-            box-shadow: 0 4px 12px rgba(41, 98, 255, 0.3);
+            letter-spacing: 1px;
+            box-shadow: 0 6px 20px rgba(240, 185, 11, 0.3);
+            transition: all 0.2s ease;
         }
 
         .btn-scan:hover:not(:disabled) {
-            opacity: 0.9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(240, 185, 11, 0.5);
         }
 
         .btn-scan:disabled {
-            background: #2a2e39;
+            background: #1f242d;
             color: var(--text-muted);
             cursor: not-allowed;
             box-shadow: none;
+            transform: none;
         }
 
-        /* Active Lock Order Sheet */
+        /* Signal Sheet */
         .signal-sheet {
             margin-top: 14px;
-            background: #161a25;
+            background: #0d1117;
             border: 1px solid var(--border-color);
-            border-radius: 6px;
-            padding: 12px;
+            border-radius: 8px;
+            padding: 14px;
             display: none;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .signal-sheet.active {
@@ -174,9 +206,9 @@
 
         .sheet-title {
             font-size: 12px;
-            font-weight: 700;
+            font-weight: 800;
             color: #fff;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -190,36 +222,39 @@
         }
 
         .param-item {
-            background: #1e222d;
-            padding: 6px 8px;
-            border-radius: 4px;
+            background: #181c25;
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
         }
 
         .param-item span {
             display: block;
             color: var(--text-muted);
             font-size: 10px;
+            margin-bottom: 2px;
         }
 
         .param-item strong {
             font-family: monospace;
-            font-size: 13px;
+            font-size: 14px;
             color: #fff;
         }
 
-        /* Progress to Target Monitor */
+        /* Progress to Target */
         .progress-box {
-            margin-top: 10px;
-            background: #1e222d;
-            padding: 8px;
-            border-radius: 4px;
+            margin-top: 12px;
+            background: #181c25;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
         }
 
         .progress-bar-bg {
             width: 100%;
-            height: 6px;
-            background: #2a2e39;
-            border-radius: 3px;
+            height: 8px;
+            background: #262b36;
+            border-radius: 4px;
             overflow: hidden;
             margin-top: 6px;
         }
@@ -228,52 +263,52 @@
             height: 100%;
             width: 0%;
             background: var(--accent-buy);
-            transition: width 0.3s ease;
+            transition: width 0.4s ease;
         }
 
         .lock-notice {
-            margin-top: 8px;
+            margin-top: 10px;
             font-size: 11px;
             color: var(--accent-gold);
             text-align: center;
-            font-style: italic;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
 <div class="terminal-container">
-    <!-- MT5 Header Style -->
+    <!-- Header -->
     <div class="mt5-header">
         <div class="symbol-info">
-            <h1>XAUUSD • H1</h1>
-            <span>Gold Spot Sniper Workspace</span>
+            <h1>XAUUSD • H1 AI Sniper</h1>
+            <span>TradePilot Neural Core</span>
         </div>
-        <div class="candle-countdown" id="candleTimer">00:00</div>
+        <div class="candle-countdown" id="candleTimer">59:45</div>
     </div>
 
-    <!-- Live Ticker (Matched to MT5 Feed) -->
+    <!-- Ticker Pricing -->
     <div class="ticker-panel">
         <div class="price-box sell">
             <div class="label">Bid Price</div>
             <div class="value" id="bidPrice">4016.32</div>
         </div>
         <div class="price-box buy">
-            <div class="label">Ask Price (Spread 30)</div>
+            <div class="label">Ask Price</div>
             <div class="value" id="askPrice">4016.62</div>
         </div>
     </div>
 
-    <!-- Scanner Control Core -->
+    <!-- Scanner Core -->
     <div class="scanner-section">
-        <div id="statusBanner" class="status-banner status-idle">Scanner Ready: Idle</div>
-        <button id="scanBtn" class="btn-scan" onclick="runAiSniperScan()">Initialize H1 AI Scan</button>
+        <div id="statusBanner" class="status-banner status-idle">Neural Bot Ready: Standing By</div>
+        <button id="scanBtn" class="btn-scan" onclick="runAiSniperScan()">⚡ Initialize AI Sniper Scan</button>
 
-        <!-- Locked Execution Sheet -->
+        <!-- Signal Sheet -->
         <div id="signalSheet" class="signal-sheet">
             <div class="sheet-title">
-                <span>🔒 LOCKED SNIPER POSITION</span>
-                <span id="signalTypeBadge" style="color: var(--accent-buy);">BUY (LONG)</span>
+                <span>🔒 LOCKED SNIPER SETUP</span>
+                <span id="signalTypeBadge" style="color: var(--accent-buy);">BUY</span>
             </div>
             <div class="param-grid">
                 <div class="param-item">
@@ -281,7 +316,7 @@
                     <strong id="lockEntry">--</strong>
                 </div>
                 <div class="param-item">
-                    <span>Target (TP 200 Pips)</span>
+                    <span>TP Target (200 Pips)</span>
                     <strong id="lockTp" style="color: var(--accent-buy);">--</strong>
                 </div>
                 <div class="param-item">
@@ -289,28 +324,28 @@
                     <strong id="lockSl" style="color: var(--accent-sell);">--</strong>
                 </div>
                 <div class="param-item">
-                    <span>Live PnL / Pips</span>
-                    <strong id="lockPips">0.0 Pips</strong>
+                    <span>Live Progress</span>
+                    <strong id="lockPips">0.0 Pts</strong>
                 </div>
             </div>
 
             <div class="progress-box">
                 <div style="display: flex; justify-content: space-between; font-size: 11px;">
-                    <span style="color: var(--text-muted);">Distance to TP Target</span>
-                    <span id="progressText">0%</span>
+                    <span style="color: var(--text-muted);">Target Distance Progress</span>
+                    <span id="progressText" style="font-family: monospace; font-weight: 700;">0%</span>
                 </div>
                 <div class="progress-bar-bg">
                     <div id="progressBarFill" class="progress-bar-fill"></div>
                 </div>
             </div>
 
-            <div class="lock-notice" id="lockNotice">⚠️ Scanner locked until Take Profit or Stop Loss is reached.</div>
+            <div class="lock-notice" id="lockNotice">🔒 Locked: Bot is enforcing risk rules until TP or SL is hit.</div>
         </div>
     </div>
 </div>
 
 <script>
-    // System Parameters based on user config
+    // Global State Variables
     let currentBid = 4016.32;
     let currentAsk = 4016.62;
     let isLocked = false;
@@ -322,34 +357,35 @@
         sl: 0
     };
 
-    // 1-Hour Candle Countdown Simulation (60 minutes loop)
-    let totalSeconds = 44 * 60 + 27; // Matches chart countdown marker
+    // Candle Countdown Timer Engine
+    let totalSeconds = 59 * 60 + 45;
     setInterval(() => {
-        if (totalSeconds > 0) totalSeconds--;
-        else totalSeconds = 3600;
-
+        if (totalSeconds > 0) {
+            totalSeconds--;
+        } else {
+            totalSeconds = 3600;
+        }
         let m = Math.floor(totalSeconds / 60);
         let s = totalSeconds % 60;
         document.getElementById('candleTimer').innerText = 
             String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
     }, 1000);
 
-    // Live MT5 Price Simulator Engine
+    // Live MT5 Price Feed Simulator
     setInterval(() => {
-        // Micro-fluctuations mirroring XAUUSD tick movement
-        let fluctuation = (Math.random() - 0.48) * 0.20;
+        let fluctuation = (Math.random() - 0.49) * 0.18;
         currentBid = parseFloat((currentBid + fluctuation).toFixed(2));
         currentAsk = parseFloat((currentBid + 0.30).toFixed(2));
 
         document.getElementById('bidPrice').innerText = currentBid.toFixed(2);
         document.getElementById('askPrice').innerText = currentAsk.toFixed(2);
 
-        // If scanner is locked, update trade execution metrics in real-time
         if (isLocked) {
             evaluateActiveTrade();
         }
-    }, 1200);
+    }, 1000);
 
+    // AI Scanner Execution Function
     function runAiSniperScan() {
         if (isLocked) return;
 
@@ -358,45 +394,43 @@
         
         btn.disabled = true;
         banner.className = "status-banner status-scanning";
-        banner.innerText = "Scanning H1 Market Structure & Order Blocks...";
+        banner.innerText = "🤖 AI Neural Bot Scanning H1 Order Blocks...";
 
         setTimeout(() => {
-            // Determine sniper direction based on automated market filter
             let isBuy = Math.random() >= 0.5;
             activeTrade.type = isBuy ? "BUY" : "SELL";
             activeTrade.entry = isBuy ? currentAsk : currentBid;
             
-            // 200 pips on Gold (XAUUSD where 1 pip = 0.10 or 1.0 depending on broker quoting; standard 200 pip target = $20.00 price distance on standard 2 decimal quotes)
+            // Exact 200 Pip target calculation for XAUUSD (20.00 price movement on standard quotes)
             const pipDistance = 20.00; 
             
             if (isBuy) {
                 activeTrade.tp = parseFloat((activeTrade.entry + pipDistance).toFixed(2));
-                activeTrade.sl = parseFloat((activeTrade.entry - (pipDistance * 0.75)).toFixed(2));
+                activeTrade.sl = parseFloat((activeTrade.entry - 12.00).toFixed(2)); // Safe 120 pip SL ratio
                 document.getElementById('signalTypeBadge').innerText = "BUY (LONG SNIPER)";
                 document.getElementById('signalTypeBadge').style.color = "var(--accent-buy)";
                 document.getElementById('progressBarFill').style.background = "var(--accent-buy)";
             } else {
                 activeTrade.tp = parseFloat((activeTrade.entry - pipDistance).toFixed(2));
-                activeTrade.sl = parseFloat((activeTrade.entry + (pipDistance * 0.75)).toFixed(2));
+                activeTrade.sl = parseFloat((activeTrade.entry + 12.00).toFixed(2));
                 document.getElementById('signalTypeBadge').innerText = "SELL (SHORT SNIPER)";
                 document.getElementById('signalTypeBadge').style.color = "var(--accent-sell)";
                 document.getElementById('progressBarFill').style.background = "var(--accent-sell)";
             }
 
-            // Lock scanner
             isLocked = true;
             banner.className = "status-banner status-locked";
-            banner.innerText = "🔒 Scanner Locked: Monitoring Live Trade";
+            banner.innerText = "🔒 AI Bot Locked: Active Sniper Trade Enforced";
 
-            // Render details
             document.getElementById('lockEntry').innerText = activeTrade.entry.toFixed(2);
             document.getElementById('lockTp').innerText = activeTrade.tp.toFixed(2);
             document.getElementById('lockSl').innerText = activeTrade.sl.toFixed(2);
             document.getElementById('signalSheet').classList.add('active');
 
-        }, 2500);
+        }, 2200);
     }
 
+    // Trade Evaluation & Lock Manager
     function evaluateActiveTrade() {
         let currentPrice = activeTrade.type === "BUY" ? currentBid : currentAsk;
         let pipsDiff = 0;
@@ -404,24 +438,24 @@
         let progress = 0;
 
         if (activeTrade.type === "BUY") {
-            pipsDiff = parseFloat(((currentPrice - activeTrade.entry)).toFixed(2));
+            pipsDiff = parseFloat((currentPrice - activeTrade.entry).toFixed(2));
             if (currentPrice >= activeTrade.tp) {
-                triggerLockRelease(true, "TP HIT (+200 Pips Target Reached!)");
+                releaseBotLock(true, "🎯 TP HIT! +200 Pips Target Accomplished");
                 return;
             }
             if (currentPrice <= activeTrade.sl) {
-                triggerLockRelease(false, "SL HIT (Stop Loss Triggered)");
+                releaseBotLock(false, "❌ SL HIT! Stop Loss Protected");
                 return;
             }
             progress = Math.max(0, Math.min(100, ((currentPrice - activeTrade.entry) / totalDistance) * 100));
         } else {
-            pipsDiff = parseFloat(((activeTrade.entry - currentPrice)).toFixed(2));
+            pipsDiff = parseFloat((activeTrade.entry - currentPrice).toFixed(2));
             if (currentPrice <= activeTrade.tp) {
-                triggerLockRelease(true, "TP HIT (+200 Pips Target Reached!)");
+                releaseBotLock(true, "🎯 TP HIT! +200 Pips Target Accomplished");
                 return;
             }
             if (currentPrice >= activeTrade.sl) {
-                triggerLockRelease(false, "SL HIT (Stop Loss Triggered)");
+                releaseBotLock(false, "❌ SL HIT! Stop Loss Protected");
                 return;
             }
             progress = Math.max(0, Math.min(100, ((activeTrade.entry - currentPrice) / totalDistance) * 100));
@@ -432,18 +466,19 @@
         document.getElementById('progressText').innerText = progress.toFixed(0) + "%";
     }
 
-    function triggerLockRelease(isWin, message) {
+    function releaseBotLock(isWin, message) {
         isLocked = false;
         let banner = document.getElementById('statusBanner');
         banner.className = "status-banner " + (isWin ? "status-success" : "status-locked");
         banner.innerText = message;
         
-        document.getElementById('lockNotice'].innerText = "✅ Trade completed. Click below to run a fresh H1 market scan.";
-        document.getElementById('scanBtn').disabled = false;
-        document.getElementById('scanBtn').innerText = "Run New H1 Scan";
+        document.getElementById('lockNotice').innerText = "✨ Cycle Complete. Tap button to run a fresh AI scan.";
+        let scanBtn = document.getElementById('scanBtn');
+        scanBtn.disabled = false;
+        scanBtn.innerText = "Run New AI Sniper Scan";
     }
 </script>
 
 </body>
-  </html>
-  
+    </html>
+        

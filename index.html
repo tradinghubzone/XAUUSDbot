@@ -7,7 +7,7 @@
     <style>
         :root {
             --bg-color: #05070b;
-            --panel-bg: rgba(14, 18, 26, 0.92);
+            --panel-bg: rgba(14, 18, 26, 0.94);
             --border-color: #222836;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
@@ -363,12 +363,12 @@
         </div>
 
         <div class="scanner-section">
-            <div id="statusBanner" class="status-banner status-idle">Ready: Persistent Institutional Lock Enabled</div>
+            <div id="statusBanner" class="status-banner status-idle">Ready: Scan Button Locked Until TP/SL</div>
             <button id="scanBtn" class="btn-scan" onclick="runAiSniperScan()">⚡ Run 200-Pip Institutional Scan</button>
 
             <div id="signalSheet" class="signal-sheet">
                 <div class="sheet-title">
-                    <span>🔒 PERSISTENT LOCKED SETUP</span>
+                    <span>🔒 LOCKED ACTIVE POSITION</span>
                     <span id="signalTypeBadge" style="color: var(--accent-buy);">BUY</span>
                 </div>
                 <div class="param-grid">
@@ -400,7 +400,7 @@
                     </div>
                 </div>
 
-                <div class="lock-notice" id="lockNotice">🔒 Locked: Signal saved securely. Reloading will maintain exact state.</div>
+                <div class="lock-notice" id="lockNotice">🔒 Button Locked: Scan remains disabled until TP or SL triggers.</div>
             </div>
         </div>
     </div>
@@ -409,7 +409,7 @@
     let currentBid = 4016.84;
     let currentAsk = 4017.14;
     
-    // Persistent state load from LocalStorage to prevent signal changes on reload
+    // Load active trade from local storage to keep state stable across reloads
     let savedState = localStorage.getItem('tradepilot_xauusd_state');
     let activeTrade = savedState ? JSON.parse(savedState) : {
         isLocked: false,
@@ -444,16 +444,17 @@
         }
     }, 1000);
 
-    // Restore state on startup if a trade is active
+    // Initialize UI on page load based on active lock state
     window.onload = function() {
         if (activeTrade.isLocked) {
-            document.getElementById('scanBtn').disabled = true;
-            document.getElementById('statusBanner.className')
+            let scanBtn = document.getElementById('scanBtn');
+            scanBtn.disabled = true;
+            scanBtn.innerText = "🔒 Scan Locked (Waiting for TP/SL)";
+
             let banner = document.getElementById('statusBanner');
             banner.className = "status-banner status-locked";
-            banner.innerText = "🔒 Persistent Lock Active: Enforcing Signal";
+            banner.innerText = "🔒 Scan Button Locked: Enforcing Active Position";
 
-            document.getElementById('signalTypeBadge.innerText');
             if (activeTrade.type === "BUY") {
                 document.getElementById('signalTypeBadge').innerText = "BUY (LONG SNIPER)";
                 document.getElementById('signalTypeBadge').style.color = "var(--accent-buy)";
@@ -478,8 +479,9 @@
         let banner = document.getElementById('statusBanner');
         
         btn.disabled = true;
+        btn.innerText = "Scanning H1 Liquidity...";
         banner.className = "status-banner status-scanning";
-        banner.innerText = "🤖 Institutional Bot Scanning H1 Liquidity...";
+        banner.innerText = "🤖 Institutional Bot Scanning H1 Order Blocks...";
         setBotMood('neutral', 'Scanning H1...');
 
         setTimeout(() => {
@@ -506,8 +508,10 @@
             activeTrade.isLocked = true;
             localStorage.setItem('tradepilot_xauusd_state', JSON.stringify(activeTrade));
 
+            btn.disabled = true;
+            btn.innerText = "🔒 Scan Locked (Waiting for TP/SL)";
             banner.className = "status-banner status-locked";
-            banner.innerText = "🔒 Bot Locked: Stable Persistent Signal Set";
+            banner.innerText = "🔒 Scan Button Locked: Active Position Enforced";
             setBotMood('neutral', 'Monitoring Trade');
 
             document.getElementById('lockEntry').innerText = activeTrade.entry.toFixed(2);
@@ -556,35 +560,4 @@
 
         document.getElementById('lockPips').innerText = (pipsDiff >= 0 ? "+" : "") + pipsDiff + " Pts";
         document.getElementById('progressBarFill').style.width = progress + "%";
-        document.getElementById('progressText').innerText = progress.toFixed(0) + "%";
-    }
-
-    function setBotMood(mood, statusText) {
-        let wallBot = document.getElementById('wallBot');
-        wallBot.className = "wall-screen-bot " + mood;
-        document.getElementById('botMoodText').innerText = statusText;
-    }
-
-    function releaseBotLock(isWin, message) {
-        activeTrade.isLocked = false;
-        localStorage.removeItem('tradepilot_xauusd_state');
-
-        let banner = document.getElementById('statusBanner');
-        banner.className = "status-banner " + (isWin ? "status-success" : "status-locked");
-        banner.innerText = message;
-        
-        if (isWin) {
-            setBotMood('happy', 'Target Reached! ^◡^');
-        } else {
-            setBotMood('sad', 'Stop Hit •︵•');
-        }
-        
-        document.getElementById('lockNotice').innerText = "✨ Cycle Complete. Tap button to run a fresh institutional scan.";
-        let scanBtn = document.getElementById('scanBtn');
-        scanBtn.disabled = false;
-        scanBtn.innerText = "Run New Institutional Scan";
-    }
-</script>
-
-</body>
-</html>
+        doc

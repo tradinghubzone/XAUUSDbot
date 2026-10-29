@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradePilot AI - XAUUSD Sniper Terminal</title>
+    <title>TradePilot AI - XAUUSD Institutional Sniper</title>
     <style>
         :root {
-            --bg-color: #07090e;
-            --panel-bg: #11151c;
-            --border-color: #262b36;
-            --text-main: #f0f3f9;
-            --text-muted: #848e9c;
-            --accent-buy: #0ecb81;
-            --accent-sell: #f6465d;
-            --accent-gold: #f0b90b;
-            --accent-glow: rgba(240, 185, 11, 0.4);
+            --bg-color: #05070b;
+            --panel-bg: #0e121a;
+            --border-color: #222836;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-buy: #10b981;
+            --accent-sell: #ef4444;
+            --accent-gold: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.3);
         }
 
         * {
@@ -39,68 +39,113 @@
             max-width: 440px;
             background: var(--panel-bg);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.7);
+            box-shadow: 0 16px 40px rgba(0,0,0,0.8);
         }
 
-        /* Header */
+        /* Institutional Header with Animated Bot Profile */
         .mt5-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 12px 16px;
-            background: #181c25;
+            background: #141a23;
             border-bottom: 1px solid var(--border-color);
         }
 
+        .bot-profile-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Animated White Body / Red Eyes AI Avatar */
+        .ai-avatar {
+            width: 38px;
+            height: 38px;
+            background: #f8fafc;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 0 12px rgba(248, 250, 252, 0.4);
+            animation: avatarFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes avatarFloat {
+            0%, 100% { transform: translateY(0); box-shadow: 0 0 10px rgba(248, 250, 252, 0.3); }
+            50% { transform: translateY(-2px); box-shadow: 0 0 18px rgba(239, 68, 68, 0.6); }
+        }
+
+        .ai-eyes {
+            display: flex;
+            gap: 6px;
+            position: absolute;
+            top: 13px;
+        }
+
+        .eye {
+            width: 6px;
+            height: 6px;
+            background: #ef4444;
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ef4444, 0 0 12px #ef4444;
+            animation: eyeBlink 4s infinite, redPulse 1.5s infinite alternate;
+        }
+
+        @keyframes eyeBlink {
+            0%, 96%, 98% { transform: scaleY(1); }
+            97%, 99% { transform: scaleY(0.1); }
+        }
+
+        @keyframes redPulse {
+            from { box-shadow: 0 0 4px #ef4444; }
+            to { box-shadow: 0 0 12px #ef4444, 0 0 20px #ef4444; }
+        }
+
         .symbol-info h1 {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 800;
             color: #fff;
             letter-spacing: 0.5px;
         }
 
         .symbol-info span {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-muted);
+            text-transform: uppercase;
         }
 
         .candle-countdown {
-            background: rgba(240, 185, 11, 0.12);
+            background: rgba(245, 158, 11, 0.15);
             color: var(--accent-gold);
-            padding: 5px 10px;
+            padding: 6px 10px;
             border-radius: 6px;
             font-size: 12px;
             font-weight: 700;
             font-family: monospace;
-            border: 1px solid rgba(240, 185, 11, 0.3);
-            animation: pulseGlow 2s infinite;
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
         }
 
-        @keyframes pulseGlow {
-            0% { box-shadow: 0 0 0 0 rgba(240, 185, 11, 0.4); }
-            70% { box-shadow: 0 0 0 6px rgba(240, 185, 11, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(240, 185, 11, 0); }
-        }
-
-        /* Live Prices */
+        /* Ticker Prices */
         .ticker-panel {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             padding: 12px;
-            background: #0d1117;
+            background: #090c10;
             border-bottom: 1px solid var(--border-color);
         }
 
         .price-box {
-            background: #181c25;
+            background: #141a23;
             padding: 10px;
             border-radius: 8px;
             text-align: center;
             border: 1px solid var(--border-color);
-            transition: transform 0.2s;
         }
 
         .price-box.sell { border-top: 3px solid var(--accent-sell); }
@@ -121,7 +166,7 @@
             color: #fff;
         }
 
-        /* AI Animated Scanner Section */
+        /* Scanner Area */
         .scanner-section {
             padding: 16px;
         }
@@ -129,7 +174,7 @@
         .status-banner {
             padding: 12px;
             border-radius: 8px;
-            font-size: 12px;
+            font-size: 11px;
             text-align: center;
             font-weight: 700;
             margin-bottom: 14px;
@@ -138,46 +183,45 @@
             transition: all 0.3s ease;
         }
 
-        .status-idle { background: #1f242d; color: var(--text-muted); }
-        
+        .status-idle { background: #1a202c; color: var(--text-muted); border: 1px solid var(--border-color); }
         .status-scanning { 
-            background: rgba(240, 185, 11, 0.15); 
+            background: rgba(245, 158, 11, 0.15); 
             color: var(--accent-gold); 
             border: 1px solid var(--accent-gold);
-            animation: scannerPulse 1s infinite alternate;
+            animation: scanGlow 1s infinite alternate;
         }
 
-        @keyframes scannerPulse {
-            from { opacity: 0.6; }
-            to { opacity: 1; transform: scale(1.01); }
+        @keyframes scanGlow {
+            from { opacity: 0.7; box-shadow: 0 0 5px rgba(245, 158, 11, 0.2); }
+            to { opacity: 1; box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
         }
 
-        .status-locked { background: rgba(246, 70, 93, 0.15); color: var(--accent-sell); border: 1px solid var(--accent-sell); }
-        .status-success { background: rgba(14, 203, 129, 0.15); color: var(--accent-buy); border: 1px solid var(--accent-buy); }
+        .status-locked { background: rgba(239, 68, 68, 0.15); color: var(--accent-sell); border: 1px solid var(--accent-sell); }
+        .status-success { background: rgba(16, 185, 129, 0.15); color: var(--accent-buy); border: 1px solid var(--accent-buy); }
 
         .btn-scan {
             width: 100%;
-            background: linear-gradient(135deg, #f0b90b, #d99a00);
+            background: linear-gradient(135deg, #f59e0b, #d97706);
             color: #000;
             border: none;
             padding: 14px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 800;
             border-radius: 8px;
             cursor: pointer;
             text-transform: uppercase;
             letter-spacing: 1px;
-            box-shadow: 0 6px 20px rgba(240, 185, 11, 0.3);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
             transition: all 0.2s ease;
         }
 
         .btn-scan:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(240, 185, 11, 0.5);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.6);
         }
 
         .btn-scan:disabled {
-            background: #1f242d;
+            background: #1a202c;
             color: var(--text-muted);
             cursor: not-allowed;
             box-shadow: none;
@@ -187,16 +231,16 @@
         /* Signal Sheet */
         .signal-sheet {
             margin-top: 14px;
-            background: #0d1117;
+            background: #090c10;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 14px;
             display: none;
-            animation: slideDown 0.3s ease;
+            animation: fadeIn 0.3s ease;
         }
 
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -222,7 +266,7 @@
         }
 
         .param-item {
-            background: #181c25;
+            background: #141a23;
             padding: 8px 10px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
@@ -241,10 +285,9 @@
             color: #fff;
         }
 
-        /* Progress to Target */
         .progress-box {
             margin-top: 12px;
-            background: #181c25;
+            background: #141a23;
             padding: 10px;
             border-radius: 6px;
             border: 1px solid var(--border-color);
@@ -253,7 +296,7 @@
         .progress-bar-bg {
             width: 100%;
             height: 8px;
-            background: #262b36;
+            background: #1f293d;
             border-radius: 4px;
             overflow: hidden;
             margin-top: 6px;
@@ -278,31 +321,39 @@
 <body>
 
 <div class="terminal-container">
-    <!-- Header -->
+    <!-- Header with Animated Bot Avatar -->
     <div class="mt5-header">
-        <div class="symbol-info">
-            <h1>XAUUSD • H1 AI Sniper</h1>
-            <span>TradePilot Neural Core</span>
+        <div class="bot-profile-area">
+            <div class="ai-avatar">
+                <div class="ai-eyes">
+                    <div class="eye"></div>
+                    <div class="eye"></div>
+                </div>
+            </div>
+            <div class="symbol-info">
+                <h1>XAUUSD • H1 AI Sniper</h1>
+                <span>Neural Bot v5.2</span>
+            </div>
         </div>
-        <div class="candle-countdown" id="candleTimer">59:45</div>
+        <div class="candle-countdown" id="candleTimer">00:00</div>
     </div>
 
     <!-- Ticker Pricing -->
     <div class="ticker-panel">
         <div class="price-box sell">
             <div class="label">Bid Price</div>
-            <div class="value" id="bidPrice">4016.32</div>
+            <div class="value" id="bidPrice">4016.84</div>
         </div>
         <div class="price-box buy">
             <div class="label">Ask Price</div>
-            <div class="value" id="askPrice">4016.62</div>
+            <div class="value" id="askPrice">4017.14</div>
         </div>
     </div>
 
     <!-- Scanner Core -->
     <div class="scanner-section">
-        <div id="statusBanner" class="status-banner status-idle">Neural Bot Ready: Standing By</div>
-        <button id="scanBtn" class="btn-scan" onclick="runAiSniperScan()">⚡ Initialize AI Sniper Scan</button>
+        <div id="statusBanner" class="status-banner status-idle">Neural Bot Standby: Ready for Scan</div>
+        <button id="scanBtn" class="btn-scan" onclick="runAiSniperScan()">⚡ Run 200-Pip Sniper Scan</button>
 
         <!-- Signal Sheet -->
         <div id="signalSheet" class="signal-sheet">
@@ -345,9 +396,8 @@
 </div>
 
 <script>
-    // Global State Variables
-    let currentBid = 4016.32;
-    let currentAsk = 4016.62;
+    let currentBid = 4016.84;
+    let currentAsk = 4017.14;
     let isLocked = false;
     
     let activeTrade = {
@@ -357,23 +407,25 @@
         sl: 0
     };
 
-    // Candle Countdown Timer Engine
-    let totalSeconds = 59 * 60 + 45;
-    setInterval(() => {
-        if (totalSeconds > 0) {
-            totalSeconds--;
-        } else {
-            totalSeconds = 3600;
-        }
-        let m = Math.floor(totalSeconds / 60);
-        let s = totalSeconds % 60;
+    // Perfect MT5 H1 Candle Countdown Synchronization Engine
+    function updateMt5Countdown() {
+        const now = new Date();
+        const currentMinute = now.getMinutes();
+        const currentSecond = now.getSeconds();
+        
+        // H1 candles reset every 60 minutes. Remaining minutes & seconds in current hour:
+        let remMinutes = 59 - currentMinute;
+        let remSeconds = 59 - currentSecond;
+
         document.getElementById('candleTimer').innerText = 
-            String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-    }, 1000);
+            String(remMinutes).padStart(2, '0') + ':' + String(remSeconds).padStart(2, '0');
+    }
+    setInterval(updateMt5Countdown, 1000);
+    updateMt5Countdown();
 
     // Live MT5 Price Feed Simulator
     setInterval(() => {
-        let fluctuation = (Math.random() - 0.49) * 0.18;
+        let fluctuation = (Math.random() - 0.48) * 0.16;
         currentBid = parseFloat((currentBid + fluctuation).toFixed(2));
         currentAsk = parseFloat((currentBid + 0.30).toFixed(2));
 
@@ -394,19 +446,19 @@
         
         btn.disabled = true;
         banner.className = "status-banner status-scanning";
-        banner.innerText = "🤖 AI Neural Bot Scanning H1 Order Blocks...";
+        banner.innerText = "🤖 Neural Bot Scanning H1 Liquidity Zones...";
 
         setTimeout(() => {
             let isBuy = Math.random() >= 0.5;
             activeTrade.type = isBuy ? "BUY" : "SELL";
             activeTrade.entry = isBuy ? currentAsk : currentBid;
             
-            // Exact 200 Pip target calculation for XAUUSD (20.00 price movement on standard quotes)
+            // Exact 200 Pip target calculation for XAUUSD (20.00 price movement)
             const pipDistance = 20.00; 
             
             if (isBuy) {
                 activeTrade.tp = parseFloat((activeTrade.entry + pipDistance).toFixed(2));
-                activeTrade.sl = parseFloat((activeTrade.entry - 12.00).toFixed(2)); // Safe 120 pip SL ratio
+                activeTrade.sl = parseFloat((activeTrade.entry - 12.00).toFixed(2));
                 document.getElementById('signalTypeBadge').innerText = "BUY (LONG SNIPER)";
                 document.getElementById('signalTypeBadge').style.color = "var(--accent-buy)";
                 document.getElementById('progressBarFill').style.background = "var(--accent-buy)";
@@ -481,4 +533,4 @@
 
 </body>
     </html>
-        
+    

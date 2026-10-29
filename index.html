@@ -7,7 +7,7 @@
     <style>
         :root {
             --bg-color: #05070b;
-            --panel-bg: #0e121a;
+            --panel-bg: rgba(14, 18, 26, 0.92);
             --border-color: #222836;
             --text-main: #f3f4f6;
             --text-muted: #9ca3af;
@@ -31,111 +31,111 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
         }
 
-        .terminal-container {
-            width: 100%;
-            max-width: 440px;
-            background: var(--panel-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 14px;
-            overflow: hidden;
-            box-shadow: 0 16px 40px rgba(0,0,0,0.8);
-        }
-
-        /* Institutional Header with Furry AI Bot Character */
-        .mt5-header {
+        /* Full Screen Wall Screen Animated Fuzz Bot Background */
+        .wall-screen-bot {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(255, 159, 10, 0.18) 0%, rgba(5, 7, 11, 0) 70%);
+            border-radius: 50%;
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
-            padding: 12px 16px;
-            background: #141a23;
-            border-bottom: 1px solid var(--border-color);
+            z-index: 0;
+            pointer-events: none;
+            transition: all 0.5s ease;
         }
 
-        .bot-profile-area {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        /* Furry Orange AI Character Avatar */
-        .fuzz-bot {
-            width: 44px;
-            height: 44px;
+        .fuzz-core {
+            width: 140px;
+            height: 140px;
             background: radial-gradient(circle, #ff9f0a 60%, #d97706 100%);
             border-radius: 50%;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 15px rgba(255, 159, 10, 0.5);
-            border: 2px solid #fed7aa;
-            overflow: hidden;
-            transition: all 0.3s ease;
+            box-shadow: 0 0 50px rgba(255, 159, 10, 0.3);
+            border: 4px solid #fed7aa;
+            animation: wallFloat 6s ease-in-out infinite;
         }
 
-        /* Furry hair spikes aura effect */
-        .fuzz-bot::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            background: repeating-conic-gradient(#ff9f0a 0deg 10deg, transparent 10deg 20deg);
-            z-index: -1;
-            opacity: 0.6;
-            animation: furSpin 10s linear infinite;
+        @keyframes wallFloat {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-10px) scale(1.03); }
         }
 
-        @keyframes furSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .bot-eyes-container {
+        .wall-eyes-container {
             display: flex;
-            gap: 4px;
-            align-items: center;
+            gap: 14px;
             position: relative;
-            top: -2px;
-            transition: transform 0.3s ease;
+            top: -4px;
         }
 
-        .bot-eye {
-            width: 11px;
-            height: 14px;
+        .wall-eye {
+            width: 28px;
+            height: 36px;
             background: #ffffff;
             border-radius: 50%;
             position: relative;
-            box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
+            box-shadow: inset 0 0 4px rgba(0,0,0,0.6);
         }
 
-        .bot-pupil {
-            width: 5px;
-            height: 6px;
+        .wall-pupil {
+            width: 14px;
+            height: 16px;
             background: #000000;
             border-radius: 50%;
             position: absolute;
-            bottom: 3px;
-            right: 2px;
-            animation: lookAround 4s infinite ease-in-out;
+            bottom: 6px;
+            right: 4px;
+            animation: wallLook 5s infinite ease-in-out;
         }
 
-        @keyframes lookAround {
+        @keyframes wallLook {
             0%, 100% { transform: translate(0, 0); }
-            50% { transform: translate(-1px, 1px); }
+            30% { transform: translate(-3px, 2px); }
+            70% { transform: translate(3px, -2px); }
         }
 
-        /* Mood Expressions */
-        .fuzz-bot.happy {
-            transform: scale(1.08) translateY(-2px);
-            box-shadow: 0 0 20px rgba(16, 185, 129, 0.7);
+        /* Wall Screen Mood States */
+        .wall-screen-bot.happy .fuzz-core {
+            box-shadow: 0 0 70px rgba(16, 185, 129, 0.6);
             border-color: #10b981;
         }
-        .fuzz-bot.sad {
-            transform: scale(0.95);
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+        .wall-screen-bot.sad .fuzz-core {
+            box-shadow: 0 0 70px rgba(239, 68, 68, 0.6);
             border-color: #ef4444;
+        }
+
+        /* Terminal UI Layer */
+        .terminal-container {
+            width: 100%;
+            max-width: 440px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 16px 40px rgba(0,0,0,0.9);
+            z-index: 1;
+            margin-top: 10px;
+        }
+
+        .mt5-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 16px;
+            background: rgba(20, 26, 35, 0.95);
+            border-bottom: 1px solid var(--border-color);
         }
 
         .symbol-info h1 {
@@ -160,16 +160,14 @@
             font-weight: 700;
             font-family: monospace;
             border: 1px solid rgba(245, 158, 11, 0.4);
-            box-shadow: 0 0 10px rgba(245, 158, 11, 0.2);
         }
 
-        /* Ticker Prices */
         .ticker-panel {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
             padding: 12px;
-            background: #090c10;
+            background: rgba(9, 12, 16, 0.9);
             border-bottom: 1px solid var(--border-color);
         }
 
@@ -199,7 +197,6 @@
             color: #fff;
         }
 
-        /* Scanner Area */
         .scanner-section {
             padding: 16px;
         }
@@ -213,22 +210,10 @@
             margin-bottom: 14px;
             text-transform: uppercase;
             letter-spacing: 0.8px;
-            transition: all 0.3s ease;
         }
 
         .status-idle { background: #1a202c; color: var(--text-muted); border: 1px solid var(--border-color); }
-        .status-scanning { 
-            background: rgba(245, 158, 11, 0.15); 
-            color: var(--accent-gold); 
-            border: 1px solid var(--accent-gold);
-            animation: scanGlow 1s infinite alternate;
-        }
-
-        @keyframes scanGlow {
-            from { opacity: 0.7; }
-            to { opacity: 1; box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
-        }
-
+        .status-scanning { background: rgba(245, 158, 11, 0.15); color: var(--accent-gold); border: 1px solid var(--accent-gold); }
         .status-locked { background: rgba(239, 68, 68, 0.15); color: var(--accent-sell); border: 1px solid var(--accent-sell); }
         .status-success { background: rgba(16, 185, 129, 0.15); color: var(--accent-buy); border: 1px solid var(--accent-buy); }
 
@@ -261,20 +246,13 @@
             transform: none;
         }
 
-        /* Signal Sheet */
         .signal-sheet {
             margin-top: 14px;
-            background: #090c10;
+            background: rgba(9, 12, 16, 0.95);
             border: 1px solid var(--border-color);
             border-radius: 8px;
             padding: 14px;
             display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-8px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .signal-sheet.active {
@@ -353,102 +331,99 @@
 </head>
 <body>
 
-<div class="terminal-container">
-    <!-- Header with Animated Furry Bot Avatar -->
-    <div class="mt5-header">
-        <div class="bot-profile-area">
-            <div id="fuzzAvatar" class="fuzz-bot">
-                <div class="bot-eyes-container">
-                    <div class="bot-eye"><div class="bot-pupil"></div></div>
-                    <div class="bot-eye"><div class="bot-pupil"></div></div>
-                </div>
+    <!-- Wall Screen Background Animated Fuzz Bot -->
+    <div id="wallBot" class="wall-screen-bot">
+        <div class="fuzz-core">
+            <div class="wall-eyes-container">
+                <div class="wall-eye"><div class="wall-pupil"></div></div>
+                <div class="wall-eye"><div class="wall-pupil"></div></div>
             </div>
+        </div>
+    </div>
+
+    <!-- Terminal UI -->
+    <div class="terminal-container">
+        <div class="mt5-header">
             <div class="symbol-info">
-                <h1>XAUUSD • H1 Sniper</h1>
-                <span id="botMoodText">Fuzz Bot: Standby</span>
+                <h1>XAUUSD • H1 Institutional Sniper</h1>
+                <span id="botMoodText">Legit Neural Bot: Standby</span>
+            </div>
+            <div class="candle-countdown" id="candleTimer">00:00</div>
+        </div>
+
+        <div class="ticker-panel">
+            <div class="price-box sell">
+                <div class="label">Bid Price</div>
+                <div class="value" id="bidPrice">4016.84</div>
+            </div>
+            <div class="price-box buy">
+                <div class="label">Ask Price</div>
+                <div class="value" id="askPrice">4017.14</div>
             </div>
         </div>
-        <div class="candle-countdown" id="candleTimer">00:00</div>
-    </div>
 
-    <!-- Ticker Pricing -->
-    <div class="ticker-panel">
-        <div class="price-box sell">
-            <div class="label">Bid Price</div>
-            <div class="value" id="bidPrice">4016.84</div>
-        </div>
-        <div class="price-box buy">
-            <div class="label">Ask Price</div>
-            <div class="value" id="askPrice">4017.14</div>
-        </div>
-    </div>
+        <div class="scanner-section">
+            <div id="statusBanner" class="status-banner status-idle">Ready: Persistent Institutional Lock Enabled</div>
+            <button id="scanBtn" class="btn-scan" onclick="runAiSniperScan()">⚡ Run 200-Pip Institutional Scan</button>
 
-    <!-- Scanner Core -->
-    <div class="scanner-section">
-        <div id="statusBanner" class="status-banner status-idle">Neural Bot Standby: Ready for Scan</div>
-        <button id="scanBtn" class="btn-scan" onclick="runAiSniperScan()">⚡ Run 200-Pip Sniper Scan</button>
+            <div id="signalSheet" class="signal-sheet">
+                <div class="sheet-title">
+                    <span>🔒 PERSISTENT LOCKED SETUP</span>
+                    <span id="signalTypeBadge" style="color: var(--accent-buy);">BUY</span>
+                </div>
+                <div class="param-grid">
+                    <div class="param-item">
+                        <span>Entry Price</span>
+                        <strong id="lockEntry">--</strong>
+                    </div>
+                    <div class="param-item">
+                        <span>TP Target (200 Pips)</span>
+                        <strong id="lockTp" style="color: var(--accent-buy);">--</strong>
+                    </div>
+                    <div class="param-item">
+                        <span>Stop Loss (SL)</span>
+                        <strong id="lockSl" style="color: var(--accent-sell);">--</strong>
+                    </div>
+                    <div class="param-item">
+                        <span>Live Progress</span>
+                        <strong id="lockPips">0.0 Pts</strong>
+                    </div>
+                </div>
 
-        <!-- Signal Sheet -->
-        <div id="signalSheet" class="signal-sheet">
-            <div class="sheet-title">
-                <span>🔒 LOCKED SNIPER SETUP</span>
-                <span id="signalTypeBadge" style="color: var(--accent-buy);">BUY</span>
+                <div class="progress-box">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px;">
+                        <span style="color: var(--text-muted);">Target Distance Progress</span>
+                        <span id="progressText" style="font-family: monospace; font-weight: 700;">0%</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div id="progressBarFill" class="progress-bar-fill"></div>
+                    </div>
+                </div>
+
+                <div class="lock-notice" id="lockNotice">🔒 Locked: Signal saved securely. Reloading will maintain exact state.</div>
             </div>
-            <div class="param-grid">
-                <div class="param-item">
-                    <span>Entry Price</span>
-                    <strong id="lockEntry">--</strong>
-                </div>
-                <div class="param-item">
-                    <span>TP Target (200 Pips)</span>
-                    <strong id="lockTp" style="color: var(--accent-buy);">--</strong>
-                </div>
-                <div class="param-item">
-                    <span>Stop Loss (SL)</span>
-                    <strong id="lockSl" style="color: var(--accent-sell);">--</strong>
-                </div>
-                <div class="param-item">
-                    <span>Live Progress</span>
-                    <strong id="lockPips">0.0 Pts</strong>
-                </div>
-            </div>
-
-            <div class="progress-box">
-                <div style="display: flex; justify-content: space-between; font-size: 11px;">
-                    <span style="color: var(--text-muted);">Target Distance Progress</span>
-                    <span id="progressText" style="font-family: monospace; font-weight: 700;">0%</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div id="progressBarFill" class="progress-bar-fill"></div>
-                </div>
-            </div>
-
-            <div class="lock-notice" id="lockNotice">🔒 Locked: Bot is enforcing risk rules until TP or SL is hit.</div>
         </div>
     </div>
-</div>
 
 <script>
     let currentBid = 4016.84;
     let currentAsk = 4017.14;
-    let isLocked = false;
     
-    let activeTrade = {
+    // Persistent state load from LocalStorage to prevent signal changes on reload
+    let savedState = localStorage.getItem('tradepilot_xauusd_state');
+    let activeTrade = savedState ? JSON.parse(savedState) : {
+        isLocked: false,
         type: null,
         entry: 0,
         tp: 0,
         sl: 0
     };
 
-    // Perfect MT5 H1 Candle Countdown Synchronization Engine
+    // MT5 H1 Candle Countdown Synchronization Engine
     function updateMt5Countdown() {
         const now = new Date();
-        const currentMinute = now.getMinutes();
-        const currentSecond = now.getSeconds();
-        
-        let remMinutes = 59 - currentMinute;
-        let remSeconds = 59 - currentSecond;
-
+        let remMinutes = 59 - now.getMinutes();
+        let remSeconds = 59 - now.getSeconds();
         document.getElementById('candleTimer').innerText = 
             String(remMinutes).padStart(2, '0') + ':' + String(remSeconds).padStart(2, '0');
     }
@@ -464,21 +439,47 @@
         document.getElementById('bidPrice').innerText = currentBid.toFixed(2);
         document.getElementById('askPrice').innerText = currentAsk.toFixed(2);
 
-        if (isLocked) {
+        if (activeTrade.isLocked) {
             evaluateActiveTrade();
         }
     }, 1000);
 
-    // AI Scanner Execution Function
+    // Restore state on startup if a trade is active
+    window.onload = function() {
+        if (activeTrade.isLocked) {
+            document.getElementById('scanBtn').disabled = true;
+            document.getElementById('statusBanner.className')
+            let banner = document.getElementById('statusBanner');
+            banner.className = "status-banner status-locked";
+            banner.innerText = "🔒 Persistent Lock Active: Enforcing Signal";
+
+            document.getElementById('signalTypeBadge.innerText');
+            if (activeTrade.type === "BUY") {
+                document.getElementById('signalTypeBadge').innerText = "BUY (LONG SNIPER)";
+                document.getElementById('signalTypeBadge').style.color = "var(--accent-buy)";
+                document.getElementById('progressBarFill').style.background = "var(--accent-buy)";
+            } else {
+                document.getElementById('signalTypeBadge').innerText = "SELL (SHORT SNIPER)";
+                document.getElementById('signalTypeBadge').style.color = "var(--accent-sell)";
+                document.getElementById('progressBarFill').style.background = "var(--accent-sell)";
+            }
+
+            document.getElementById('lockEntry').innerText = activeTrade.entry.toFixed(2);
+            document.getElementById('lockTp').innerText = activeTrade.tp.toFixed(2);
+            document.getElementById('lockSl').innerText = activeTrade.sl.toFixed(2);
+            document.getElementById('signalSheet').classList.add('active');
+        }
+    };
+
     function runAiSniperScan() {
-        if (isLocked) return;
+        if (activeTrade.isLocked) return;
 
         let btn = document.getElementById('scanBtn');
         let banner = document.getElementById('statusBanner');
         
         btn.disabled = true;
         banner.className = "status-banner status-scanning";
-        banner.innerText = "🤖 Fuzz Bot Scanning H1 Order Blocks...";
+        banner.innerText = "🤖 Institutional Bot Scanning H1 Liquidity...";
         setBotMood('neutral', 'Scanning H1...');
 
         setTimeout(() => {
@@ -486,8 +487,7 @@
             activeTrade.type = isBuy ? "BUY" : "SELL";
             activeTrade.entry = isBuy ? currentAsk : currentBid;
             
-            // Exact 200 Pip target calculation for XAUUSD (20.00 price movement)
-            const pipDistance = 20.00; 
+            const pipDistance = 20.00; // Exact 200 Pip Target
             
             if (isBuy) {
                 activeTrade.tp = parseFloat((activeTrade.entry + pipDistance).toFixed(2));
@@ -503,9 +503,11 @@
                 document.getElementById('progressBarFill').style.background = "var(--accent-sell)";
             }
 
-            isLocked = true;
+            activeTrade.isLocked = true;
+            localStorage.setItem('tradepilot_xauusd_state', JSON.stringify(activeTrade));
+
             banner.className = "status-banner status-locked";
-            banner.innerText = "🔒 Fuzz Bot Locked: Sniper Trade Active";
+            banner.innerText = "🔒 Bot Locked: Stable Persistent Signal Set";
             setBotMood('neutral', 'Monitoring Trade');
 
             document.getElementById('lockEntry').innerText = activeTrade.entry.toFixed(2);
@@ -516,7 +518,6 @@
         }, 2200);
     }
 
-    // Trade Evaluation & Lock Manager with Mood Updates
     function evaluateActiveTrade() {
         let currentPrice = activeTrade.type === "BUY" ? currentBid : currentAsk;
         let pipsDiff = 0;
@@ -547,7 +548,6 @@
             progress = Math.max(0, Math.min(100, ((activeTrade.entry - currentPrice) / totalDistance) * 100));
         }
 
-        // Change bot mood dynamically based on live profit or loss
         if (pipsDiff > 0) {
             setBotMood('happy', `In Profit (+${pipsDiff} Pts) ^◡^`);
         } else if (pipsDiff < 0) {
@@ -560,13 +560,15 @@
     }
 
     function setBotMood(mood, statusText) {
-        let avatar = document.getElementById('fuzzAvatar');
-        avatar.className = "fuzz-bot " + mood;
+        let wallBot = document.getElementById('wallBot');
+        wallBot.className = "wall-screen-bot " + mood;
         document.getElementById('botMoodText').innerText = statusText;
     }
 
     function releaseBotLock(isWin, message) {
-        isLocked = false;
+        activeTrade.isLocked = false;
+        localStorage.removeItem('tradepilot_xauusd_state');
+
         let banner = document.getElementById('statusBanner');
         banner.className = "status-banner " + (isWin ? "status-success" : "status-locked");
         banner.innerText = message;
@@ -577,13 +579,12 @@
             setBotMood('sad', 'Stop Hit •︵•');
         }
         
-        document.getElementById('lockNotice').innerText = "✨ Cycle Complete. Tap button to run a fresh AI scan.";
+        document.getElementById('lockNotice').innerText = "✨ Cycle Complete. Tap button to run a fresh institutional scan.";
         let scanBtn = document.getElementById('scanBtn');
         scanBtn.disabled = false;
-        scanBtn.innerText = "Run New AI Sniper Scan";
+        scanBtn.innerText = "Run New Institutional Scan";
     }
 </script>
 
 </body>
-    </html>
-    
+</html>

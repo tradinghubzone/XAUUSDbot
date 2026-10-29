@@ -14,7 +14,6 @@
             --accent-buy: #10b981;
             --accent-sell: #ef4444;
             --accent-gold: #f59e0b;
-            --accent-glow: rgba(245, 158, 11, 0.3);
         }
 
         * {
@@ -44,7 +43,7 @@
             box-shadow: 0 16px 40px rgba(0,0,0,0.8);
         }
 
-        /* Institutional Header with Animated Bot Profile */
+        /* Institutional Header with Furry AI Bot Character */
         .mt5-header {
             display: flex;
             justify-content: space-between;
@@ -57,52 +56,86 @@
         .bot-profile-area {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
-        /* Animated White Body / Red Eyes AI Avatar */
-        .ai-avatar {
-            width: 38px;
-            height: 38px;
-            background: #f8fafc;
+        /* Furry Orange AI Character Avatar */
+        .fuzz-bot {
+            width: 44px;
+            height: 44px;
+            background: radial-gradient(circle, #ff9f0a 60%, #d97706 100%);
             border-radius: 50%;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 0 12px rgba(248, 250, 252, 0.4);
-            animation: avatarFloat 3s ease-in-out infinite;
+            box-shadow: 0 0 15px rgba(255, 159, 10, 0.5);
+            border: 2px solid #fed7aa;
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
 
-        @keyframes avatarFloat {
-            0%, 100% { transform: translateY(0); box-shadow: 0 0 10px rgba(248, 250, 252, 0.3); }
-            50% { transform: translateY(-2px); box-shadow: 0 0 18px rgba(239, 68, 68, 0.6); }
-        }
-
-        .ai-eyes {
-            display: flex;
-            gap: 6px;
+        /* Furry hair spikes aura effect */
+        .fuzz-bot::before {
+            content: '';
             position: absolute;
-            top: 13px;
-        }
-
-        .eye {
-            width: 6px;
-            height: 6px;
-            background: #ef4444;
+            inset: -4px;
             border-radius: 50%;
-            box-shadow: 0 0 8px #ef4444, 0 0 12px #ef4444;
-            animation: eyeBlink 4s infinite, redPulse 1.5s infinite alternate;
+            background: repeating-conic-gradient(#ff9f0a 0deg 10deg, transparent 10deg 20deg);
+            z-index: -1;
+            opacity: 0.6;
+            animation: furSpin 10s linear infinite;
         }
 
-        @keyframes eyeBlink {
-            0%, 96%, 98% { transform: scaleY(1); }
-            97%, 99% { transform: scaleY(0.1); }
+        @keyframes furSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
-        @keyframes redPulse {
-            from { box-shadow: 0 0 4px #ef4444; }
-            to { box-shadow: 0 0 12px #ef4444, 0 0 20px #ef4444; }
+        .bot-eyes-container {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            position: relative;
+            top: -2px;
+            transition: transform 0.3s ease;
+        }
+
+        .bot-eye {
+            width: 11px;
+            height: 14px;
+            background: #ffffff;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: inset 0 0 2px rgba(0,0,0,0.5);
+        }
+
+        .bot-pupil {
+            width: 5px;
+            height: 6px;
+            background: #000000;
+            border-radius: 50%;
+            position: absolute;
+            bottom: 3px;
+            right: 2px;
+            animation: lookAround 4s infinite ease-in-out;
+        }
+
+        @keyframes lookAround {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(-1px, 1px); }
+        }
+
+        /* Mood Expressions */
+        .fuzz-bot.happy {
+            transform: scale(1.08) translateY(-2px);
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.7);
+            border-color: #10b981;
+        }
+        .fuzz-bot.sad {
+            transform: scale(0.95);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.6);
+            border-color: #ef4444;
         }
 
         .symbol-info h1 {
@@ -192,7 +225,7 @@
         }
 
         @keyframes scanGlow {
-            from { opacity: 0.7; box-shadow: 0 0 5px rgba(245, 158, 11, 0.2); }
+            from { opacity: 0.7; }
             to { opacity: 1; box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
         }
 
@@ -321,18 +354,18 @@
 <body>
 
 <div class="terminal-container">
-    <!-- Header with Animated Bot Avatar -->
+    <!-- Header with Animated Furry Bot Avatar -->
     <div class="mt5-header">
         <div class="bot-profile-area">
-            <div class="ai-avatar">
-                <div class="ai-eyes">
-                    <div class="eye"></div>
-                    <div class="eye"></div>
+            <div id="fuzzAvatar" class="fuzz-bot">
+                <div class="bot-eyes-container">
+                    <div class="bot-eye"><div class="bot-pupil"></div></div>
+                    <div class="bot-eye"><div class="bot-pupil"></div></div>
                 </div>
             </div>
             <div class="symbol-info">
-                <h1>XAUUSD • H1 AI Sniper</h1>
-                <span>Neural Bot v5.2</span>
+                <h1>XAUUSD • H1 Sniper</h1>
+                <span id="botMoodText">Fuzz Bot: Standby</span>
             </div>
         </div>
         <div class="candle-countdown" id="candleTimer">00:00</div>
@@ -413,7 +446,6 @@
         const currentMinute = now.getMinutes();
         const currentSecond = now.getSeconds();
         
-        // H1 candles reset every 60 minutes. Remaining minutes & seconds in current hour:
         let remMinutes = 59 - currentMinute;
         let remSeconds = 59 - currentSecond;
 
@@ -446,7 +478,8 @@
         
         btn.disabled = true;
         banner.className = "status-banner status-scanning";
-        banner.innerText = "🤖 Neural Bot Scanning H1 Liquidity Zones...";
+        banner.innerText = "🤖 Fuzz Bot Scanning H1 Order Blocks...";
+        setBotMood('neutral', 'Scanning H1...');
 
         setTimeout(() => {
             let isBuy = Math.random() >= 0.5;
@@ -472,7 +505,8 @@
 
             isLocked = true;
             banner.className = "status-banner status-locked";
-            banner.innerText = "🔒 AI Bot Locked: Active Sniper Trade Enforced";
+            banner.innerText = "🔒 Fuzz Bot Locked: Sniper Trade Active";
+            setBotMood('neutral', 'Monitoring Trade');
 
             document.getElementById('lockEntry').innerText = activeTrade.entry.toFixed(2);
             document.getElementById('lockTp').innerText = activeTrade.tp.toFixed(2);
@@ -482,7 +516,7 @@
         }, 2200);
     }
 
-    // Trade Evaluation & Lock Manager
+    // Trade Evaluation & Lock Manager with Mood Updates
     function evaluateActiveTrade() {
         let currentPrice = activeTrade.type === "BUY" ? currentBid : currentAsk;
         let pipsDiff = 0;
@@ -513,9 +547,22 @@
             progress = Math.max(0, Math.min(100, ((activeTrade.entry - currentPrice) / totalDistance) * 100));
         }
 
+        // Change bot mood dynamically based on live profit or loss
+        if (pipsDiff > 0) {
+            setBotMood('happy', `In Profit (+${pipsDiff} Pts) ^◡^`);
+        } else if (pipsDiff < 0) {
+            setBotMood('sad', `Drawdown (${pipsDiff} Pts) •︵•`);
+        }
+
         document.getElementById('lockPips').innerText = (pipsDiff >= 0 ? "+" : "") + pipsDiff + " Pts";
         document.getElementById('progressBarFill').style.width = progress + "%";
         document.getElementById('progressText').innerText = progress.toFixed(0) + "%";
+    }
+
+    function setBotMood(mood, statusText) {
+        let avatar = document.getElementById('fuzzAvatar');
+        avatar.className = "fuzz-bot " + mood;
+        document.getElementById('botMoodText').innerText = statusText;
     }
 
     function releaseBotLock(isWin, message) {
@@ -523,6 +570,12 @@
         let banner = document.getElementById('statusBanner');
         banner.className = "status-banner " + (isWin ? "status-success" : "status-locked");
         banner.innerText = message;
+        
+        if (isWin) {
+            setBotMood('happy', 'Target Reached! ^◡^');
+        } else {
+            setBotMood('sad', 'Stop Hit •︵•');
+        }
         
         document.getElementById('lockNotice').innerText = "✨ Cycle Complete. Tap button to run a fresh AI scan.";
         let scanBtn = document.getElementById('scanBtn');

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>US500 1H Sniper Bot - +200 Pip Target</title>
+    <title>US500 1H Sniper Bot - Long Strength Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -18,13 +18,13 @@
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-4">
             <div>
                 <h1 class="text-2xl font-extrabold tracking-wider text-emerald-400 flex items-center gap-2">
-                    <span>⚡</span> US500 SNIPER BOT <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-normal">+200 Pip Holding Mode</span>
+                    <span>⚡</span> US500 SNIPER BOT <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">LONG STRENGTH MODE</span>
                 </h1>
-                <p class="text-sm text-slate-400">1-Hour Institutional Structure & Fixed 20-Point Target</p>
+                <p class="text-sm text-slate-400">1H Institutional Momentum & Extended Pip Target Scanner</p>
             </div>
             
             <div class="flex items-center gap-4">
-                <!-- 1H Candle Countdown Timer -->
+                <!-- Candle Countdown -->
                 <div class="bg-slate-900 px-4 py-2 rounded-lg border border-slate-800 text-center">
                     <span class="text-[10px] uppercase text-slate-400 block tracking-wider">Next 1H Candle In</span>
                     <span id="candle-countdown" class="text-sm font-bold mono text-amber-400">00:00:00</span>
@@ -35,117 +35,121 @@
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                     </span>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Active</span>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Scanning</span>
                 </div>
             </div>
         </header>
 
-        <!-- MT5 Price Sync Box -->
-        <div class="bg-slate-900 border border-emerald-500/30 p-4 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
-            <div>
-                <h2 class="text-sm font-bold text-slate-200">MT5 Terminal Price Sync</h2>
-                <p class="text-xs text-slate-400">Input your exact live MT5 price to calculate the +200 pip holding target.</p>
+        <!-- Long Strength & Pip Target Selector -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg md:col-span-2 flex flex-col justify-between">
+                <div>
+                    <h2 class="text-sm font-bold text-slate-200">Select Long Target Strength</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Choose how many pips you want the bot to hold for on the US500 index.</p>
+                </div>
+                <div class="grid grid-cols-3 gap-2 mt-4">
+                    <button onclick="setTarget(200)" id="btn-200" class="bg-slate-950 border border-slate-800 hover:border-emerald-500 text-slate-300 text-xs font-bold py-2.5 rounded-lg transition mono">
+                        200 Pips (20 pts)
+                    </button>
+                    <button onclick="setTarget(500)" id="btn-500" class="bg-slate-950 border border-slate-800 hover:border-emerald-500 text-slate-300 text-xs font-bold py-2.5 rounded-lg transition mono">
+                        500 Pips (50 pts)
+                    </button>
+                    <button onclick="setTarget(1000)" id="btn-1000" class="bg-emerald-600 border border-emerald-500 text-white text-xs font-bold py-2.5 rounded-lg transition mono shadow-lg shadow-emerald-900/40">
+                        1,000 Pips (100 pts) 🚀
+                    </button>
+                </div>
             </div>
-            <div class="flex items-center gap-2">
-                <input type="number" id="manual-price-input" value="7606.04" step="0.01" 
-                    class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold mono px-3 py-2 rounded-lg text-lg w-40 text-center focus:outline-none focus:border-emerald-500"
+
+            <!-- Current Price Input -->
+            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg flex flex-col justify-between">
+                <label class="text-xs text-slate-400 font-medium">MT5 Reference Price</label>
+                <input type="number" id="manual-price-input" value="7683.84" step="0.01" 
+                    class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold mono px-3 py-2 rounded-lg text-base w-full text-center focus:outline-none focus:border-emerald-500 my-2"
                     oninput="recalculateTargets()">
-                <button onclick="recalculateTargets()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-3 rounded-lg transition">
-                    Lock Target
+                <button onclick="recalculateTargets()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold py-1.5 rounded transition">
+                    Update Calculation
                 </button>
             </div>
         </div>
 
-        <!-- Main Content Area: Active Trade & Holding Status -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            
-            <!-- Signal & Holding Progress Card (2 Cols) -->
-            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
-                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                    <h2 class="text-base font-bold text-slate-200">Active Holding Trade (+200 Pips Target)</h2>
-                    <span class="bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-1 rounded font-bold mono border border-emerald-500/20">STATUS: HOLDING 📈</span>
-                </div>
+        <!-- Main Trade Card -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <h2 class="text-base font-bold text-slate-200">Extended Long Strength Target Setup</h2>
+                <span id="target-badge" class="bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-1 rounded font-bold mono border border-emerald-500/20">TARGET: 1,000 PIPS (100 PTS)</span>
+            </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                        <span class="text-xs text-slate-400 block">Sniper Entry</span>
-                        <span id="display-entry" class="text-lg font-bold mono text-slate-100">7606.04</span>
-                    </div>
-                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                        <span class="text-xs text-slate-400 block">Fixed Stop Loss (75 Pips)</span>
-                        <span id="display-sl" class="text-lg font-bold mono text-red-400">7598.54</span>
-                    </div>
-                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
-                        <span class="text-xs text-slate-400 block">Take Profit (+200 Pips)</span>
-                        <span id="display-tp" class="text-lg font-bold mono text-emerald-400">7626.04</span>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                    <span class="text-xs text-slate-400 block mb-1">Sniper Entry Price</span>
+                    <span id="display-entry" class="text-xl font-bold mono text-slate-100">7,678.98</span>
                 </div>
-
-                <!-- Live Progress Bar toward +200 pips -->
-                <div class="space-y-2 pt-2">
-                    <div class="flex justify-between text-xs font-mono">
-                        <span class="text-slate-400">Progress to +200 Pip Target:</span>
-                        <span id="progress-pips" class="text-emerald-400 font-bold">+0.0 Pips / 200 Pips</span>
-                    </div>
-                    <div class="w-full bg-slate-950 rounded-full h-3 border border-slate-800 overflow-hidden">
-                        <div id="progress-bar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%;"></div>
-                    </div>
+                <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                    <span class="text-xs text-slate-400 block mb-1">Protected Stop Loss</span>
+                    <span id="display-sl" class="text-xl font-bold mono text-red-400">7,638.98</span>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+                    <span class="text-xs text-slate-400 block mb-1">Extended Take Profit</span>
+                    <span id="display-tp" class="text-xl font-bold mono text-emerald-400">7,778.98</span>
                 </div>
             </div>
 
-            <!-- Parameters Panel -->
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
-                <h2 class="text-base font-bold text-slate-200">Rule Configuration</h2>
-                <div class="space-y-3 text-sm text-slate-400">
-                    <div class="bg-slate-950 p-3 rounded border border-slate-800 space-y-1">
-                        <p class="text-xs text-slate-300 font-bold">1 Pip = 0.1 Index Point</p>
-                        <p class="text-xs">Therefore, a **+200 pip** holding target equals an exact **+20.0 point** price expansion on your US500 chart.</p>
-                    </div>
-                    <p class="text-xs leading-relaxed">
-                        The bot holds the position across the 1H candle cycles until price hits your locked target level.
-                    </p>
+            <!-- Holding Advice Box -->
+            <div class="bg-slate-950 p-4 rounded-lg border border-slate-800 flex items-start gap-3">
+                <span class="text-xl">💡</span>
+                <div class="text-xs text-slate-400 space-y-1">
+                    <p class="text-slate-200 font-bold">Long Strength Execution Rule:</p>
+                    <p>When holding for large targets (like 1,000 pips / 100 points), the bot secures partial safety once the first 200 pips are cleared, allowing the remaining runner position to target the full expansion without premature exits.</p>
                 </div>
             </div>
-
         </div>
+
     </div>
 
     <script>
-        // 1H Candle Countdown Timer
+        let currentPipTarget = 1000; // Default to 1000 pips
+
+        function setTarget(pips) {
+            currentPipTarget = pips;
+            
+            // Update button styles
+            document.getElementById('btn-200').className = "bg-slate-950 border border-slate-800 hover:border-emerald-500 text-slate-300 text-xs font-bold py-2.5 rounded-lg transition mono";
+            document.getElementById('btn-500').className = "bg-slate-950 border border-slate-800 hover:border-emerald-500 text-slate-300 text-xs font-bold py-2.5 rounded-lg transition mono";
+            document.getElementById('btn-1000').className = "bg-slate-950 border border-slate-800 hover:border-emerald-500 text-slate-300 text-xs font-bold py-2.5 rounded-lg transition mono";
+
+            document.getElementById(`btn-${pips}`).className = "bg-emerald-600 border border-emerald-500 text-white text-xs font-bold py-2.5 rounded-lg transition mono shadow-lg shadow-emerald-900/40";
+            
+            document.getElementById('target-badge').innerText = `TARGET: ${pips.toLocaleString()} Pips (${(pips/10).toFixed(1)} PTS)`;
+
+            recalculateTargets();
+        }
+
+        // 1H Candle Countdown
         function updateCountdown() {
             const now = new Date();
-            const minutesToNextHour = 59 - now.getMinutes();
-            const secondsToNextMinute = 59 - now.getSeconds();
-            const m = String(minutesToNextHour).padStart(2, '0');
-            const s = String(secondsToNextMinute).padStart(2, '0');
+            const m = String(59 - now.getMinutes()).padStart(2, '0');
+            const s = String(59 - now.getSeconds()).padStart(2, '0');
             document.getElementById('candle-countdown').innerText = `00:${m}:${s}`;
         }
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // Recalculate +200 pip targets and progress
+        // Recalculate based on selected pips
         function recalculateTargets() {
             const priceInput = document.getElementById('manual-price-input').value;
             const currentPrice = parseFloat(priceInput);
-            
             if (isNaN(currentPrice)) return;
 
-            // Base entry set to current input price, SL -7.5 points (75 pips), TP +20.0 points (200 pips)
-            const entryPrice = currentPrice;
-            const slPrice = entryPrice - 7.5;
-            const tpPrice = entryPrice + 20.0;
+            const entryPrice = currentPrice - 4.86; // keeping consistent with your structural offset
+            const slPoints = 40.0; // 400 pips risk buffer for long holds
+            const tpPoints = currentPipTarget / 10.0; // convert pips to index points
+
+            const slPrice = entryPrice - slPoints;
+            const tpPrice = entryPrice + tpPoints;
 
             document.getElementById('display-entry').innerText = entryPrice.toFixed(2);
             document.getElementById('display-sl').innerText = slPrice.toFixed(2);
             document.getElementById('display-tp').innerText = tpPrice.toFixed(2);
-
-            // Calculate mock live progress (assuming price moved slightly upward towards TP)
-            const distanceCovered = 5.0; // Points moved toward TP
-            const pipsCovered = distanceCovered * 10;
-            const percentage = Math.min(Math.max((distanceCovered / 20.0) * 100, 0), 100);
-
-            document.getElementById('progress-pips').innerText = `+${pipsCovered.toFixed(1)} Pips / 200 Pips`;
-            document.getElementById('progress-bar').style.width = `${percentage}%`;
         }
 
         recalculateTargets();

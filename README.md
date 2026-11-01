@@ -1,1 +1,1 @@
-# XAUUSDbot
+US500SHARP

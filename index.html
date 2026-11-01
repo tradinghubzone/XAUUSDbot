@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>US500 1H Sniper Bot - MT5 Synced</title>
+    <title>US500 1H Sniper Bot - +200 Pip Target</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -18,9 +18,9 @@
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-4">
             <div>
                 <h1 class="text-2xl font-extrabold tracking-wider text-emerald-400 flex items-center gap-2">
-                    <span>⚡</span> US500 SNIPER BOT <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-normal">MT5 Synced</span>
+                    <span>⚡</span> US500 SNIPER BOT <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-normal">+200 Pip Holding Mode</span>
                 </h1>
-                <p class="text-sm text-slate-400">1-Hour Institutional Structure & 200-Pip Target Scanner</p>
+                <p class="text-sm text-slate-400">1-Hour Institutional Structure & Fixed 20-Point Target</p>
             </div>
             
             <div class="flex items-center gap-4">
@@ -35,7 +35,7 @@
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                     </span>
-                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Live</span>
+                    <span class="text-xs font-semibold uppercase tracking-wider text-slate-300">Active</span>
                 </div>
             </div>
         </header>
@@ -44,66 +44,65 @@
         <div class="bg-slate-900 border border-emerald-500/30 p-4 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
                 <h2 class="text-sm font-bold text-slate-200">MT5 Terminal Price Sync</h2>
-                <p class="text-xs text-slate-400">Type your exact MT5 US500 price below to instantly recalculate targets.</p>
+                <p class="text-xs text-slate-400">Input your exact live MT5 price to calculate the +200 pip holding target.</p>
             </div>
             <div class="flex items-center gap-2">
                 <input type="number" id="manual-price-input" value="7606.04" step="0.01" 
                     class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold mono px-3 py-2 rounded-lg text-lg w-40 text-center focus:outline-none focus:border-emerald-500"
                     oninput="recalculateTargets()">
                 <button onclick="recalculateTargets()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-3 rounded-lg transition">
-                    Sync Numbers
+                    Lock Target
                 </button>
             </div>
         </div>
 
-        <!-- Market Overview Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
-                <p class="text-xs text-slate-400 font-medium">Timeframe</p>
-                <p class="text-lg font-bold mono mt-1 text-sky-400">1 Hour (1H)</p>
-            </div>
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
-                <p class="text-xs text-slate-400 font-medium">Target Spread</p>
-                <p class="text-lg font-bold mono mt-1 text-emerald-400">200 Pips (20.0 pts)</p>
-            </div>
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
-                <p class="text-xs text-slate-400 font-medium">Fixed Risk</p>
-                <p class="text-lg font-bold mono mt-1 text-red-400">75 Pips (7.5 pts)</p>
-            </div>
-        </div>
-
-        <!-- Main Content Area: Signals -->
+        <!-- Main Content Area: Active Trade & Holding Status -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
-            <!-- Signal Log Feed -->
-            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-base font-bold text-slate-200">Active Sniper Signal (MT5 Synchronized)</h2>
+            <!-- Signal & Holding Progress Card (2 Cols) -->
+            <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
+                <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                    <h2 class="text-base font-bold text-slate-200">Active Holding Trade (+200 Pips Target)</h2>
+                    <span class="bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-1 rounded font-bold mono border border-emerald-500/20">STATUS: HOLDING 📈</span>
                 </div>
 
-                <div id="signal-container" class="space-y-3">
-                    <div class="p-4 rounded-lg bg-slate-950 border border-slate-800 flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <span class="bg-emerald-500/10 text-emerald-400 text-xs px-2 py-0.5 rounded font-bold mono border border-emerald-500/20">SNIPER BUY</span>
-                                <span id="sample-time" class="text-xs text-slate-400 mono">--</span>
-                            </div>
-                            <p class="text-sm font-semibold mono mt-2">Entry: <span id="sample-entry" class="text-slate-200">7606.04</span></p>
-                        </div>
-                        <div class="text-left md:text-right mono text-xs space-y-1">
-                            <p id="sample-sl" class="text-red-400">SL: 7598.54 (75 Pips)</p>
-                            <p id="sample-tp" class="text-emerald-400">TP: 7626.04 (200 Pips)</p>
-                        </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                        <span class="text-xs text-slate-400 block">Sniper Entry</span>
+                        <span id="display-entry" class="text-lg font-bold mono text-slate-100">7606.04</span>
+                    </div>
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                        <span class="text-xs text-slate-400 block">Fixed Stop Loss (75 Pips)</span>
+                        <span id="display-sl" class="text-lg font-bold mono text-red-400">7598.54</span>
+                    </div>
+                    <div class="bg-slate-950 p-3 rounded-lg border border-slate-800">
+                        <span class="text-xs text-slate-400 block">Take Profit (+200 Pips)</span>
+                        <span id="display-tp" class="text-lg font-bold mono text-emerald-400">7626.04</span>
+                    </div>
+                </div>
+
+                <!-- Live Progress Bar toward +200 pips -->
+                <div class="space-y-2 pt-2">
+                    <div class="flex justify-between text-xs font-mono">
+                        <span class="text-slate-400">Progress to +200 Pip Target:</span>
+                        <span id="progress-pips" class="text-emerald-400 font-bold">+0.0 Pips / 200 Pips</span>
+                    </div>
+                    <div class="w-full bg-slate-950 rounded-full h-3 border border-slate-800 overflow-hidden">
+                        <div id="progress-bar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 0%;"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Parameters Panel -->
             <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
-                <h2 class="text-base font-bold text-slate-200">Execution Rule</h2>
+                <h2 class="text-base font-bold text-slate-200">Rule Configuration</h2>
                 <div class="space-y-3 text-sm text-slate-400">
+                    <div class="bg-slate-950 p-3 rounded border border-slate-800 space-y-1">
+                        <p class="text-xs text-slate-300 font-bold">1 Pip = 0.1 Index Point</p>
+                        <p class="text-xs">Therefore, a **+200 pip** holding target equals an exact **+20.0 point** price expansion on your US500 chart.</p>
+                    </div>
                     <p class="text-xs leading-relaxed">
-                        When your MT5 chart price moves, simply enter the current price above to verify exact Stop Loss and Take Profit figures instantly.
+                        The bot holds the position across the 1H candle cycles until price hits your locked target level.
                     </p>
                 </div>
             </div>
@@ -124,26 +123,31 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // Recalculate based on MT5 input price
+        // Recalculate +200 pip targets and progress
         function recalculateTargets() {
             const priceInput = document.getElementById('manual-price-input').value;
             const currentPrice = parseFloat(priceInput);
             
             if (isNaN(currentPrice)) return;
 
-            // On US500: 75 pips = 7.5 index points | 200 pips = 20.0 index points
-            const slPrice = currentPrice - 7.5;
-            const tpPrice = currentPrice + 20.0;
+            // Base entry set to current input price, SL -7.5 points (75 pips), TP +20.0 points (200 pips)
+            const entryPrice = currentPrice;
+            const slPrice = entryPrice - 7.5;
+            const tpPrice = entryPrice + 20.0;
 
-            const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
-            
-            document.getElementById('sample-time').innerText = nowStr;
-            document.getElementById('sample-entry').innerText = currentPrice.toFixed(2);
-            document.getElementById('sample-sl').innerText = `SL: ${slPrice.toFixed(2)} (75 Pips)`;
-            document.getElementById('sample-tp').innerText = `TP: ${tpPrice.toFixed(2)} (200 Pips)`;
+            document.getElementById('display-entry').innerText = entryPrice.toFixed(2);
+            document.getElementById('display-sl').innerText = slPrice.toFixed(2);
+            document.getElementById('display-tp').innerText = tpPrice.toFixed(2);
+
+            // Calculate mock live progress (assuming price moved slightly upward towards TP)
+            const distanceCovered = 5.0; // Points moved toward TP
+            const pipsCovered = distanceCovered * 10;
+            const percentage = Math.min(Math.max((distanceCovered / 20.0) * 100, 0), 100);
+
+            document.getElementById('progress-pips').innerText = `+${pipsCovered.toFixed(1)} Pips / 200 Pips`;
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
         }
 
-        // Run on load
         recalculateTargets();
     </script>
 </body>

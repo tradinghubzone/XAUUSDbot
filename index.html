@@ -18,13 +18,13 @@
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-4">
             <div>
                 <h1 class="text-2xl font-extrabold tracking-wider text-emerald-400 flex items-center gap-2">
-                    <span>⚡</span> US500 SNIPER BOT <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-normal">MT5 Feed</span>
+                    <span>⚡</span> US500 SNIPER BOT <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded font-normal">MT5 Synced</span>
                 </h1>
                 <p class="text-sm text-slate-400">1-Hour Institutional Structure & 200-Pip Target Scanner</p>
             </div>
             
             <div class="flex items-center gap-4">
-                <!-- Live 1H Candle Countdown Timer -->
+                <!-- 1H Candle Countdown Timer -->
                 <div class="bg-slate-900 px-4 py-2 rounded-lg border border-slate-800 text-center">
                     <span class="text-[10px] uppercase text-slate-400 block tracking-wider">Next 1H Candle In</span>
                     <span id="candle-countdown" class="text-sm font-bold mono text-amber-400">00:00:00</span>
@@ -40,36 +40,45 @@
             </div>
         </header>
 
-        <!-- Market Overview Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
-                <p class="text-xs text-slate-400 font-medium">Live MT5 Price</p>
-                <p id="live-price" class="text-lg font-bold mono mt-1 text-slate-100">Loading...</p>
+        <!-- MT5 Price Sync Box -->
+        <div class="bg-slate-900 border border-emerald-500/30 p-4 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h2 class="text-sm font-bold text-slate-200">MT5 Terminal Price Sync</h2>
+                <p class="text-xs text-slate-400">Type your exact MT5 US500 price below to instantly recalculate targets.</p>
             </div>
+            <div class="flex items-center gap-2">
+                <input type="number" id="manual-price-input" value="7606.04" step="0.01" 
+                    class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold mono px-3 py-2 rounded-lg text-lg w-40 text-center focus:outline-none focus:border-emerald-500"
+                    oninput="recalculateTargets()">
+                <button onclick="recalculateTargets()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-3 rounded-lg transition">
+                    Sync Numbers
+                </button>
+            </div>
+        </div>
+
+        <!-- Market Overview Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
                 <p class="text-xs text-slate-400 font-medium">Timeframe</p>
                 <p class="text-lg font-bold mono mt-1 text-sky-400">1 Hour (1H)</p>
             </div>
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
                 <p class="text-xs text-slate-400 font-medium">Target Spread</p>
-                <p class="text-lg font-bold mono mt-1 text-emerald-400">200 Pips (20 pts)</p>
+                <p class="text-lg font-bold mono mt-1 text-emerald-400">200 Pips (20.0 pts)</p>
             </div>
             <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg">
-                <p class="text-xs text-slate-400 font-medium">Market Trend Bias</p>
-                <p id="market-bias" class="text-lg font-bold mono mt-1 text-emerald-500">BULLISH 📈</p>
+                <p class="text-xs text-slate-400 font-medium">Fixed Risk</p>
+                <p class="text-lg font-bold mono mt-1 text-red-400">75 Pips (7.5 pts)</p>
             </div>
         </div>
 
-        <!-- Main Content Area: Signals & Controls -->
+        <!-- Main Content Area: Signals -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             <!-- Signal Log Feed -->
             <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg">
                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-base font-bold text-slate-200">Active Sniper Signals (MT5 Aligned)</h2>
-                    <button onclick="fetchMT5Data()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-3 py-1.5 rounded transition">
-                        Refresh Scanner Feed
-                    </button>
+                    <h2 class="text-base font-bold text-slate-200">Active Sniper Signal (MT5 Synchronized)</h2>
                 </div>
 
                 <div id="signal-container" class="space-y-3">
@@ -79,11 +88,11 @@
                                 <span class="bg-emerald-500/10 text-emerald-400 text-xs px-2 py-0.5 rounded font-bold mono border border-emerald-500/20">SNIPER BUY</span>
                                 <span id="sample-time" class="text-xs text-slate-400 mono">--</span>
                             </div>
-                            <p class="text-sm font-semibold mono mt-2">Entry: <span id="sample-entry" class="text-slate-200">--</span></p>
+                            <p class="text-sm font-semibold mono mt-2">Entry: <span id="sample-entry" class="text-slate-200">7606.04</span></p>
                         </div>
                         <div class="text-left md:text-right mono text-xs space-y-1">
-                            <p id="sample-sl" class="text-red-400">SL: -- (7.5 pts / 75 Pips)</p>
-                            <p id="sample-tp" class="text-emerald-400">TP: -- (20.0 pts / 200 Pips)</p>
+                            <p id="sample-sl" class="text-red-400">SL: 7598.54 (75 Pips)</p>
+                            <p id="sample-tp" class="text-emerald-400">TP: 7626.04 (200 Pips)</p>
                         </div>
                     </div>
                 </div>
@@ -91,26 +100,10 @@
 
             <!-- Parameters Panel -->
             <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
-                <h2 class="text-base font-bold text-slate-200">Execution Parameters</h2>
-                
-                <div class="space-y-3 text-sm">
-                    <div>
-                        <label class="text-xs text-slate-400 block mb-1">Take Profit Target</label>
-                        <input type="text" value="200 Pips (20.0 Index Points)" disabled class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-slate-300 mono text-xs">
-                    </div>
-                    <div>
-                        <label class="text-xs text-slate-400 block mb-1">Fixed Risk Stop Loss</label>
-                        <input type="text" value="75 Pips (7.5 Index Points)" disabled class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-slate-300 mono text-xs">
-                    </div>
-                    <div>
-                        <label class="text-xs text-slate-400 block mb-1">Execution Timeframe</label>
-                        <input type="text" value="1 Hour Chart (1H Bar Close)" disabled class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-2 text-slate-300 mono text-xs">
-                    </div>
-                </div>
-
-                <div class="pt-4 border-t border-slate-800">
-                    <p class="text-xs text-slate-500 leading-relaxed">
-                        Prices mirror institutional index pricing feeds identically configured with MetaTrader standard decimal formatting.
+                <h2 class="text-base font-bold text-slate-200">Execution Rule</h2>
+                <div class="space-y-3 text-sm text-slate-400">
+                    <p class="text-xs leading-relaxed">
+                        When your MT5 chart price moves, simply enter the current price above to verify exact Stop Loss and Take Profit figures instantly.
                     </p>
                 </div>
             </div>
@@ -119,58 +112,39 @@
     </div>
 
     <script>
-        // 1. Live 1H Candle Countdown Timer Script
+        // 1H Candle Countdown Timer
         function updateCountdown() {
             const now = new Date();
             const minutesToNextHour = 59 - now.getMinutes();
             const secondsToNextMinute = 59 - now.getSeconds();
-            
             const m = String(minutesToNextHour).padStart(2, '0');
             const s = String(secondsToNextMinute).padStart(2, '0');
-            
             document.getElementById('candle-countdown').innerText = `00:${m}:${s}`;
         }
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        // 2. Fetch live data simulation aligned with MT5 pricing numbers
-        async function fetchMT5Data() {
-            try {
-                // Pulling live S&P500 public feed proxy for exact numerical alignment
-                const response = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/^GSPC?interval=1h&range=1d');
-                const data = await response.json();
-                const quote = data.chart.result[0];
-                const currentPrice = quote.meta.regularMarketPrice;
-                
-                document.getElementById('live-price').innerText = currentPrice.toFixed(2);
-                
-                const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
-                document.getElementById('sample-time').innerText = nowStr;
-                document.getElementById('sample-entry').innerText = currentPrice.toFixed(2);
-                document.getElementById('sample-sl').innerText = `SL: ${(currentPrice - 7.5).toFixed(2)} (75 Pips)`;
-                document.getElementById('sample-tp').innerText = `TP: ${(currentPrice + 20.0).toFixed(2)} (200 Pips)`;
-                
-                if(currentPrice > quote.meta.previousClose) {
-                    document.getElementById('market-bias').innerText = "BULLISH 📈";
-                    document.getElementById('market-bias').className = "text-lg font-bold mono mt-1 text-emerald-500";
-                } else {
-                    document.getElementById('market-bias').innerText = "BEARISH 📉";
-                    document.getElementById('market-bias').className = "text-lg font-bold mono mt-1 text-red-500";
-                }
-            } catch (error) {
-                // Fallback simulation if network blocks direct CORS public fetch in local browser
-                const fallbackPrice = 5852.40;
-                document.getElementById('live-price').innerText = fallbackPrice.toFixed(2);
-                document.getElementById('sample-time').innerText = "Active 1H Bar";
-                document.getElementById('sample-entry').innerText = fallbackPrice.toFixed(2);
-                document.getElementById('sample-sl').innerText = `SL: ${(fallbackPrice - 7.5).toFixed(2)} (75 Pips)`;
-                document.getElementById('sample-tp').innerText = `TP: ${(fallbackPrice + 20.0).toFixed(2)} (200 Pips)`;
-            }
+        // Recalculate based on MT5 input price
+        function recalculateTargets() {
+            const priceInput = document.getElementById('manual-price-input').value;
+            const currentPrice = parseFloat(priceInput);
+            
+            if (isNaN(currentPrice)) return;
+
+            // On US500: 75 pips = 7.5 index points | 200 pips = 20.0 index points
+            const slPrice = currentPrice - 7.5;
+            const tpPrice = currentPrice + 20.0;
+
+            const nowStr = new Date().toISOString().replace('T', ' ').substring(0, 19);
+            
+            document.getElementById('sample-time').innerText = nowStr;
+            document.getElementById('sample-entry').innerText = currentPrice.toFixed(2);
+            document.getElementById('sample-sl').innerText = `SL: ${slPrice.toFixed(2)} (75 Pips)`;
+            document.getElementById('sample-tp').innerText = `TP: ${tpPrice.toFixed(2)} (200 Pips)`;
         }
 
-        fetchMT5Data();
-        // Refresh every 60 seconds
-        setInterval(fetchMT5Data, 60000);
+        // Run on load
+        recalculateTargets();
     </script>
 </body>
 </html>

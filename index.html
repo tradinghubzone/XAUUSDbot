@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>US500 1H Sniper Bot - Auto-Scan Engine</title>
+    <title>US500 2,000-Pip Sniper Bot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -18,9 +18,9 @@
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-4">
             <div>
                 <h1 class="text-2xl font-extrabold tracking-wider text-emerald-400 flex items-center gap-2">
-                    <span>⚡</span> US500 SNIPER BOT <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">AUTO-SCAN ENGINE</span>
+                    <span>⚡</span> US500 SNIPER BOT <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">2,000-PIP HOLD MODE</span>
                 </h1>
-                <p class="text-sm text-slate-400">Auto-resets upon TP/SL hit and scans for the next 1H setup</p>
+                <p class="text-sm text-slate-400">Locks trade & holds until 2,000-Pip TP (200 Index Points) or SL is hit</p>
             </div>
             
             <div class="flex items-center gap-4">
@@ -35,39 +35,23 @@
                       <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                     </span>
-                    <span id="bot-status-indicator" class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Holding & Tracking</span>
+                    <span id="bot-status-badge" class="text-xs font-semibold uppercase tracking-wider text-emerald-400">LOCKED & HOLDING</span>
                 </div>
             </div>
         </header>
 
-        <!-- Controls: Target Selector & Manual Price Sync -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg md:col-span-2 flex flex-col justify-between">
-                <div>
-                    <h2 class="text-sm font-bold text-slate-200">Active Pip Target</h2>
-                    <p class="text-xs text-slate-400 mt-0.5">Bot auto-resets and scans new signals once target is reached.</p>
-                </div>
-                <div class="grid grid-cols-3 gap-2 mt-4">
-                    <button onclick="setTarget(200)" id="btn-200" class="bg-slate-950 border border-slate-800 hover:border-emerald-500 text-slate-300 text-xs font-bold py-2.5 rounded-lg transition mono">
-                        200 Pips
-                    </button>
-                    <button onclick="setTarget(500)" id="btn-500" class="bg-slate-950 border border-slate-800 hover:border-emerald-500 text-slate-300 text-xs font-bold py-2.5 rounded-lg transition mono">
-                        500 Pips
-                    </button>
-                    <button onclick="setTarget(1000)" id="btn-1000" class="bg-emerald-600 border border-emerald-500 text-white text-xs font-bold py-2.5 rounded-lg transition mono shadow-lg shadow-emerald-900/40">
-                        1,000 Pips 🚀
-                    </button>
-                </div>
+        <!-- MT5 Reference Price Input -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <h2 class="text-sm font-bold text-slate-200">MT5 Terminal Price Sync</h2>
+                <p class="text-xs text-slate-400">Match your exact chart price to calculate the 2,000-pip target box.</p>
             </div>
-
-            <!-- Current Price Input -->
-            <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg flex flex-col justify-between">
-                <label class="text-xs text-slate-400 font-medium">MT5 Reference Price</label>
-                <input type="number" id="manual-price-input" value="7683.84" step="0.01" 
-                    class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold mono px-3 py-2 rounded-lg text-base w-full text-center focus:outline-none focus:border-emerald-500 my-2"
-                    oninput="simulateMarketMove()">
-                <button onclick="simulateTpHit()" class="w-full bg-emerald-700 hover:bg-emerald-600 text-white text-xs font-semibold py-1.5 rounded transition">
-                    Simulate TP Hit & Rescan
+            <div class="flex items-center gap-2">
+                <input type="number" id="manual-price-input" value="7679.64" step="0.01" 
+                    class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold mono px-3 py-2 rounded-lg text-lg w-40 text-center focus:outline-none focus:border-emerald-500"
+                    oninput="recalculateTargets()">
+                <button onclick="triggerSimulatedTP()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-3 rounded-lg transition">
+                    Simulate TP Hit (+2,000 Pips)
                 </button>
             </div>
         </div>
@@ -75,30 +59,30 @@
         <!-- Main Trade Card -->
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h2 id="trade-state-title" class="text-base font-bold text-slate-200">Active Trade Setup (Holding Long)</h2>
-                <span id="target-badge" class="bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-1 rounded font-bold mono border border-emerald-500/20">TARGET: 1,000 PIPS</span>
+                <h2 id="state-title" class="text-base font-bold text-slate-200">Active Locked Trade (Target: 2,000 Pips / 200 Points)</h2>
+                <span class="bg-amber-500/10 text-amber-400 text-xs px-2.5 py-1 rounded font-bold mono border border-amber-500/20">SCANNER LOCKED</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                    <span class="text-xs text-slate-400 block mb-1">Sniper Entry Price</span>
-                    <span id="display-entry" class="text-xl font-bold mono text-slate-100">7,678.98</span>
+                    <span class="text-xs text-slate-400 block mb-1">Sniper Entry</span>
+                    <span id="display-entry" class="text-xl font-bold mono text-slate-100">7,679.64</span>
                 </div>
                 <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                    <span class="text-xs text-slate-400 block mb-1">Protected Stop Loss</span>
-                    <span id="display-sl" class="text-xl font-bold mono text-red-400">7,638.98</span>
+                    <span class="text-xs text-slate-400 block mb-1">Fixed Stop Loss (400 Pips)</span>
+                    <span id="display-sl" class="text-xl font-bold mono text-red-400">7,639.64</span>
                 </div>
                 <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                    <span class="text-xs text-slate-400 block mb-1">Take Profit Target</span>
-                    <span id="display-tp" class="text-xl font-bold mono text-emerald-400">7,778.98</span>
+                    <span class="text-xs text-slate-400 block mb-1">Take Profit (+2,000 Pips)</span>
+                    <span id="display-tp" class="text-xl font-bold mono text-emerald-400">7,879.64</span>
                 </div>
             </div>
 
-            <!-- Signal History / Activity Log -->
+            <!-- Execution Log -->
             <div class="pt-2">
-                <p class="text-xs text-slate-400 font-bold mb-2">Scanner Execution Log:</p>
+                <p class="text-xs text-slate-400 font-bold mb-2">Bot Activity Log:</p>
                 <div id="execution-log" class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs mono space-y-1 text-slate-300">
-                    <p class="text-emerald-400">[System] Bot active. 1H structure locked. Holding target...</p>
+                    <p class="text-emerald-400">[System] 2,000-pip target box locked. Holding position through 1H candle cycles...</p>
                 </div>
             </div>
         </div>
@@ -106,22 +90,7 @@
     </div>
 
     <script>
-        let currentPipTarget = 1000;
-        let entryPrice = 7678.98;
-        let slPrice = 7638.98;
-        let tpPrice = 7778.98;
-
-        function setTarget(pips) {
-            currentPipTarget = pips;
-            document.getElementById('btn-200').className = "bg-slate-950 border border-slate-800 hover:border-emerald-500 text-slate-300 text-xs font-bold py-2.5 rounded-lg transition mono";
-            document.getElementById('btn-500').className = "bg-slate-950 border border-slate-800 hover:border-emerald-500 text-slate-300 text-xs font-bold py-2.5 rounded-lg transition mono";
-            document.getElementById('btn-1000').className = "bg-slate-950 border border-slate-800 hover:border-emerald-500 text-slate-300 text-xs font-bold py-2.5 rounded-lg transition mono";
-
-            document.getElementById(`btn-${pips}`).className = "bg-emerald-600 border border-emerald-500 text-white text-xs font-bold py-2.5 rounded-lg transition mono shadow-lg shadow-emerald-900/40";
-            document.getElementById('target-badge').innerText = `TARGET: ${pips.toLocaleString()} Pips`;
-
-            recalculateTargets();
-        }
+        let isTradeActive = true;
 
         // 1H Candle Countdown
         function updateCountdown() {
@@ -134,53 +103,22 @@
         updateCountdown();
 
         function recalculateTargets() {
+            if (!isTradeActive) return;
             const priceInput = document.getElementById('manual-price-input').value;
             const currentPrice = parseFloat(priceInput);
             if (isNaN(currentPrice)) return;
 
-            entryPrice = currentPrice;
-            const slPoints = 40.0; 
-            const tpPoints = currentPipTarget / 10.0; 
+            // Entry matches green baseline, SL 40 pts (400 pips) risk, TP 200 pts (2,000 pips) top line
+            const entry = currentPrice;
+            const sl = entry - 40.0; 
+            const tp = entry + 200.0; 
 
-            slPrice = entryPrice - slPoints;
-            tpPrice = entryPrice + tpPoints;
-
-            document.getElementById('display-entry').innerText = entryPrice.toFixed(2);
-            document.getElementById('display-sl').innerText = slPrice.toFixed(2);
-            document.getElementById('display-tp').innerText = tpPrice.toFixed(2);
+            document.getElementById('display-entry').innerText = entry.toFixed(2);
+            document.getElementById('display-sl').innerText = sl.toFixed(2);
+            document.getElementById('display-tp').innerText = tp.toFixed(2);
         }
 
-        // Automatically triggered when TP is hit or simulated
-        function simulateTpHit() {
-            const logContainer = document.getElementById('execution-log');
-            const timeStr = new Date().toLocaleTimeString();
-
-            // 1. Log Take Profit Hit
-            let logEntry1 = document.createElement('p');
-            logEntry1.className = "text-emerald-400";
-            logEntry1.innerText = `[${timeStr}] 🎯 TAKE PROFIT REACHED (+${currentPipTarget} Pips secured)! Closing trade.`;
-            logContainer.prepend(logEntry1);
-
-            document.getElementById('bot-status-indicator').innerText = "Scanning New 1H Bar";
-            document.getElementById('bot-status-indicator').className = "text-xs font-semibold uppercase tracking-wider text-amber-400";
-
-            // 2. Simulate automatic re-scan after 1.5 seconds
-            setTimeout(() => {
-                const newBasePrice = parseFloat(document.getElementById('manual-price-input').value) + 4.5; // Slight market shift
-                document.getElementById('manual-price-input').value = newBasePrice.toFixed(2);
-                recalculateTargets();
-
-                let logEntry2 = document.createElement('p');
-                logEntry2.className = "text-sky-400";
-                logEntry2.innerText = `[${new Date().toLocaleTimeString()}] ⚡ NEW SIGNAL FOUND: 1H Structure Break confirmed. Sniper Buy locked at ${newBasePrice.toFixed(2)}`;
-                logContainer.prepend(logEntry2);
-
-                document.getElementById('bot-status-indicator').innerText = "Holding & Tracking";
-                document.getElementById('bot-status-indicator').className = "text-xs font-semibold uppercase tracking-wider text-emerald-400";
-            }, 1500);
-        }
-
-        recalculateTargets();
-    </script>
-</body>
-</html>
+        // When TP is hit, trade closes, scanner unlocks, and a new signal is generated
+        function triggerSimulatedTP() {
+            isTradeActive = false;
+            const logContainer = document.getElementById('execution-log

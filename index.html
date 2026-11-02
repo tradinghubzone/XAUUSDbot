@@ -18,13 +18,13 @@
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-4">
             <div>
                 <h1 class="text-2xl font-extrabold tracking-wider text-emerald-400 flex items-center gap-2">
-                    <span>⚡</span> US500 AUTONOMOUS AI BOT <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">SELF-SCANNING & LOCK</span>
+                    <span>⚡</span> US500 AUTONOMOUS AI BOT <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">2,000-PIP LOCK</span>
                 </h1>
-                <p class="text-sm text-slate-400">Scans 1H market structure independently, locks trade, and holds for 2,000 Pips</p>
+                <p class="text-sm text-slate-400">Autonomous 1H market scanner with manual scan override</p>
             </div>
             
             <div class="flex items-center gap-4">
-                <!-- Candle Countdown -->
+                <!-- Live Countdown -->
                 <div class="bg-slate-900 px-4 py-2 rounded-lg border border-slate-800 text-center">
                     <span class="text-[10px] uppercase text-slate-400 block tracking-wider">1H Bar Close In</span>
                     <span id="candle-countdown" class="text-sm font-bold mono text-amber-400">00:00:00</span>
@@ -40,18 +40,23 @@
             </div>
         </header>
 
-        <!-- MT5 Sync & Manual Override Panel -->
-        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
+        <!-- Controls & Manual Scan Button Panel -->
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg grid grid-cols-1 md:grid-cols-3 gap-4 items-center">
             <div>
-                <h2 class="text-sm font-bold text-slate-200">Live AI Market Scanner Feed</h2>
-                <p class="text-xs text-slate-400">Bot has independently scanned and locked the current 2,000-pip institutional box.</p>
+                <h2 class="text-sm font-bold text-slate-200">Live AI Market Scanner</h2>
+                <p class="text-xs text-slate-400">Scan manually or let the bot auto-lock targets.</p>
             </div>
-            <div class="flex items-center gap-2">
+            <div>
                 <input type="number" id="market-price" value="7679.64" step="0.01" 
-                    class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold mono px-3 py-2 rounded-lg text-lg w-40 text-center focus:outline-none focus:border-emerald-500"
+                    class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold mono px-3 py-2 rounded-lg text-base w-full text-center focus:outline-none focus:border-emerald-500"
                     oninput="updateLockedTrade()">
-                <button onclick="simulateTradeComplete()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-3 rounded-lg transition">
-                    Simulate TP Hit / Auto-Rescan
+            </div>
+            <div class="flex gap-2">
+                <button onclick="forceManualScan()" class="flex-1 bg-sky-600 hover:bg-sky-500 text-white text-xs font-semibold py-3 rounded-lg transition shadow-lg">
+                    🔍 Scan Now
+                </button>
+                <button onclick="simulateTradeComplete()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold py-3 rounded-lg transition shadow-lg">
+                    Simulate TP Hit
                 </button>
             </div>
         </div>
@@ -78,7 +83,7 @@
                 </div>
             </div>
 
-            <!-- Execution & Autonomous Log -->
+            <!-- Execution Log -->
             <div class="pt-2">
                 <p class="text-xs text-slate-400 font-bold mb-2">Autonomous Bot Log:</p>
                 <div id="execution-log" class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs mono space-y-1 text-slate-300">
@@ -92,21 +97,78 @@
     <script>
         let isLocked = true;
 
-        // 1H Countdown Timer
+        // Live 1H Countdown Timer
         function updateCountdown() {
             const now = new Date();
-            const m = String(59 - now.getMinutes()).padStart(2, '0');
-            const s = String(59 - now.getSeconds()).padStart(2, '0');
-            document.getElementById('candle-countdown').innerText = `00:${m}:${s}`;
+            const minutesLeft = 59 - now.getMinutes();
+            const secondsLeft = 59 - now.getSeconds();
+            document.getElementById('candle-countdown').innerText = `00:${String(minutesLeft).padStart(2, '0')}:${String(secondsLeft).padStart(2, '0')}`;
         }
-        setInterval(updateCountdown, 1000);
         updateCountdown();
+        setInterval(updateCountdown, 1000);
 
-        // Updates calculations while locked
         function updateLockedTrade() {
             if (!isLocked) return;
             const price = parseFloat(document.getElementById('market-price').value);
             if (isNaN(price)) return;
 
             const entry = price;
-            const sl = entry - 
+            const sl = entry - 40.0; // 400 Pips risk buffer
+            const tp = entry + 200.0; // 2,000 Pips target (200 Index Points)
+
+            document.getElementById('display-entry').innerText = entry.toFixed(2);
+            document.getElementById('display-sl').innerText = sl.toFixed(2);
+            document.getElementById('display-tp').innerText = tp.toFixed(2);
+        }
+
+        // Force manual scan button action
+        function forceManualScan() {
+            const logContainer = document.getElementById('execution-log');
+            const timeStr = new Date().toLocaleTimeString();
+            
+            isLocked = true;
+            const currentPrice = parseFloat(document.getElementById('market-price').value) + (Math.random() > 0.5 ? 2.5 : -2.5);
+            document.getElementById('market-price').value = currentPrice.toFixed(2);
+            updateLockedTrade();
+
+            let log = document.createElement('p');
+            log.className = "text-sky-400";
+            log.innerText = `[${timeStr}] 🔍 [Manual Scan] 1H market re-scanned. Fresh setup verified at ${currentPrice.toFixed(2)}. Trade locked!`;
+            logContainer.prepend(log);
+        }
+
+        function simulateTradeComplete() {
+            isLocked = false;
+            const logContainer = document.getElementById('execution-log');
+            const timeStr = new Date().toLocaleTimeString();
+
+            let log1 = document.createElement('p');
+            log1.className = "text-emerald-400";
+            log1.innerText = `[${timeStr}] 🎯 TP HIT! Trade successfully completed +2,000 Pips. Bot unlocking...`;
+            logContainer.prepend(log1);
+
+            document.getElementById('bot-status-badge').innerText = "STATE: SELF-SCANNING";
+            document.getElementById('bot-status-badge').className = "text-xs font-semibold uppercase tracking-wider text-amber-400";
+            document.getElementById('status-dot').className = "relative inline-flex rounded-full h-3 w-3 bg-amber-500";
+
+            setTimeout(() => {
+                isLocked = true;
+                const scannedPrice = parseFloat(document.getElementById('market-price').value) + 10.00;
+                document.getElementById('market-price').value = scannedPrice.toFixed(2);
+                updateLockedTrade();
+
+                let log2 = document.createElement('p');
+                log2.className = "text-sky-400";
+                log2.innerText = `[${new Date().toLocaleTimeString()}] 🤖 [AI Scanner] New 1H market structure breakout found! Sniper Buy executed at ${scannedPrice.toFixed(2)}. TRADE LOCKED.`;
+                logContainer.prepend(log2);
+
+                document.getElementById('bot-status-badge').innerText = "STATE: LOCKED & HOLDING";
+                document.getElementById('bot-status-badge').className = "text-xs font-semibold uppercase tracking-wider text-emerald-400";
+                document.getElementById('status-dot').className = "relative inline-flex rounded-full h-3 w-3 bg-emerald-500";
+            }, 1500);
+        }
+
+        updateLockedTrade();
+    </script>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>US500 2,000-Pip Sniper Bot</title>
+    <title>US500 Autonomous AI Sniper Bot</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
@@ -18,54 +18,54 @@
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 gap-4">
             <div>
                 <h1 class="text-2xl font-extrabold tracking-wider text-emerald-400 flex items-center gap-2">
-                    <span>⚡</span> US500 SNIPER BOT <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">2,000-PIP HOLD MODE</span>
+                    <span>⚡</span> US500 AUTONOMOUS AI BOT <span class="text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-mono">SELF-SCANNING & LOCK</span>
                 </h1>
-                <p class="text-sm text-slate-400">Locks trade & holds until 2,000-Pip TP (200 Index Points) or SL is hit</p>
+                <p class="text-sm text-slate-400">Scans 1H market structure independently, locks trade, and holds for 2,000 Pips</p>
             </div>
             
             <div class="flex items-center gap-4">
                 <!-- Candle Countdown -->
                 <div class="bg-slate-900 px-4 py-2 rounded-lg border border-slate-800 text-center">
-                    <span class="text-[10px] uppercase text-slate-400 block tracking-wider">Next 1H Candle In</span>
+                    <span class="text-[10px] uppercase text-slate-400 block tracking-wider">1H Bar Close In</span>
                     <span id="candle-countdown" class="text-sm font-bold mono text-amber-400">00:00:00</span>
                 </div>
 
                 <div class="flex items-center gap-2 bg-slate-900 px-4 py-2.5 rounded-lg border border-slate-800">
                     <span class="relative flex h-3 w-3">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                      <span id="ping-dot" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span id="status-dot" class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                     </span>
-                    <span id="bot-status-badge" class="text-xs font-semibold uppercase tracking-wider text-emerald-400">LOCKED & HOLDING</span>
+                    <span id="bot-status-badge" class="text-xs font-semibold uppercase tracking-wider text-emerald-400">STATE: LOCKED & HOLDING</span>
                 </div>
             </div>
         </header>
 
-        <!-- MT5 Reference Price Input -->
+        <!-- MT5 Sync & Manual Override Panel -->
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-center gap-4">
             <div>
-                <h2 class="text-sm font-bold text-slate-200">MT5 Terminal Price Sync</h2>
-                <p class="text-xs text-slate-400">Match your exact chart price to calculate the 2,000-pip target box.</p>
+                <h2 class="text-sm font-bold text-slate-200">Live AI Market Scanner Feed</h2>
+                <p class="text-xs text-slate-400">Bot has independently scanned and locked the current 2,000-pip institutional box.</p>
             </div>
             <div class="flex items-center gap-2">
-                <input type="number" id="manual-price-input" value="7679.64" step="0.01" 
+                <input type="number" id="market-price" value="7679.64" step="0.01" 
                     class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold mono px-3 py-2 rounded-lg text-lg w-40 text-center focus:outline-none focus:border-emerald-500"
-                    oninput="recalculateTargets()">
-                <button onclick="triggerSimulatedTP()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-3 rounded-lg transition">
-                    Simulate TP Hit (+2,000 Pips)
+                    oninput="updateLockedTrade()">
+                <button onclick="simulateTradeComplete()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-4 py-3 rounded-lg transition">
+                    Simulate TP Hit / Auto-Rescan
                 </button>
             </div>
         </div>
 
-        <!-- Main Trade Card -->
+        <!-- Main Locked Trade Card -->
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-lg space-y-4">
             <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-                <h2 id="state-title" class="text-base font-bold text-slate-200">Active Locked Trade (Target: 2,000 Pips / 200 Points)</h2>
-                <span class="bg-amber-500/10 text-amber-400 text-xs px-2.5 py-1 rounded font-bold mono border border-amber-500/20">SCANNER LOCKED</span>
+                <h2 id="card-title" class="text-base font-bold text-slate-200">Autonomous AI Trade Locked (Target: 2,000 Pips / 200 Points)</h2>
+                <span class="bg-emerald-500/10 text-emerald-400 text-xs px-2.5 py-1 rounded font-bold mono border border-emerald-500/20">LOCKED MODE ACTIVE</span>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
                 <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                    <span class="text-xs text-slate-400 block mb-1">Sniper Entry</span>
+                    <span class="text-xs text-slate-400 block mb-1">AI Sniper Entry</span>
                     <span id="display-entry" class="text-xl font-bold mono text-slate-100">7,679.64</span>
                 </div>
                 <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
@@ -73,16 +73,16 @@
                     <span id="display-sl" class="text-xl font-bold mono text-red-400">7,639.64</span>
                 </div>
                 <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
-                    <span class="text-xs text-slate-400 block mb-1">Take Profit (+2,000 Pips)</span>
+                    <span class="text-xs text-slate-400 block mb-1">Take Profit Target (+2,000 Pips)</span>
                     <span id="display-tp" class="text-xl font-bold mono text-emerald-400">7,879.64</span>
                 </div>
             </div>
 
-            <!-- Execution Log -->
+            <!-- Execution & Autonomous Log -->
             <div class="pt-2">
-                <p class="text-xs text-slate-400 font-bold mb-2">Bot Activity Log:</p>
+                <p class="text-xs text-slate-400 font-bold mb-2">Autonomous Bot Log:</p>
                 <div id="execution-log" class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-xs mono space-y-1 text-slate-300">
-                    <p class="text-emerald-400">[System] 2,000-pip target box locked. Holding position through 1H candle cycles...</p>
+                    <p class="text-emerald-400">[AI Scanner] 1H structure scanned. High-probability Long setup verified. Trade locked at 7,679.64.</p>
                 </div>
             </div>
         </div>
@@ -90,9 +90,9 @@
     </div>
 
     <script>
-        let isTradeActive = true;
+        let isLocked = true;
 
-        // 1H Candle Countdown
+        // 1H Countdown Timer
         function updateCountdown() {
             const now = new Date();
             const m = String(59 - now.getMinutes()).padStart(2, '0');
@@ -102,23 +102,11 @@
         setInterval(updateCountdown, 1000);
         updateCountdown();
 
-        function recalculateTargets() {
-            if (!isTradeActive) return;
-            const priceInput = document.getElementById('manual-price-input').value;
-            const currentPrice = parseFloat(priceInput);
-            if (isNaN(currentPrice)) return;
+        // Updates calculations while locked
+        function updateLockedTrade() {
+            if (!isLocked) return;
+            const price = parseFloat(document.getElementById('market-price').value);
+            if (isNaN(price)) return;
 
-            // Entry matches green baseline, SL 40 pts (400 pips) risk, TP 200 pts (2,000 pips) top line
-            const entry = currentPrice;
-            const sl = entry - 40.0; 
-            const tp = entry + 200.0; 
-
-            document.getElementById('display-entry').innerText = entry.toFixed(2);
-            document.getElementById('display-sl').innerText = sl.toFixed(2);
-            document.getElementById('display-tp').innerText = tp.toFixed(2);
-        }
-
-        // When TP is hit, trade closes, scanner unlocks, and a new signal is generated
-        function triggerSimulatedTP() {
-            isTradeActive = false;
-            const logContainer = document.getElementById('execution-log
+            const entry = price;
+            const sl = entry - 

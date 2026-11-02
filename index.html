@@ -30,7 +30,7 @@
         <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl space-y-3">
             <label class="text-xs text-slate-400 font-semibold block">Enter Live MT5 US500 Price:</label>
             <div class="flex gap-2">
-                <input type="number" id="market-price" value="7679.64" step="0.01" 
+                <input type="number" id="market-price" value="7617.04" step="0.01" 
                     class="bg-slate-950 border border-slate-700 text-emerald-400 font-bold mono px-3 py-2 rounded-lg text-lg w-full text-center focus:outline-none focus:border-emerald-500"
                     oninput="calculateTargets()">
             </div>
@@ -47,15 +47,15 @@
             <div class="space-y-3">
                 <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
                     <span class="text-xs text-slate-400">Sniper Entry</span>
-                    <span id="display-entry" class="text-base font-bold mono text-slate-100">7,679.64</span>
+                    <span id="display-entry" class="text-base font-bold mono text-slate-100">7,617.04</span>
                 </div>
                 <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
                     <span class="text-xs text-slate-400">Stop Loss (400 Pips)</span>
-                    <span id="display-sl" class="text-base font-bold mono text-red-400">7,639.64</span>
+                    <span id="display-sl" class="text-base font-bold mono text-red-400">7,577.04</span>
                 </div>
                 <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 flex justify-between items-center">
                     <span class="text-xs text-slate-400">Take Profit (+2,000 Pips)</span>
-                    <span id="display-tp" class="text-base font-bold mono text-emerald-400">7,879.64</span>
+                    <span id="display-tp" class="text-base font-bold mono text-emerald-400">7,817.04</span>
                 </div>
             </div>
 
@@ -68,4 +68,46 @@
     </div>
 
     <script>
-        // Live 1H Countdown
+        // High-Precision Live Countdown Engine (Resilient to Mobile Background Throttling)
+        function updateCountdown() {
+            const now = new Date();
+            const minutesLeft = 59 - now.getMinutes();
+            const secondsLeft = 59 - now.getSeconds();
+
+            const m = String(minutesLeft).padStart(2, '0');
+            const s = String(secondsLeft).padStart(2, '0');
+
+            document.getElementById('candle-countdown').innerText = `00:${m}:${s}`;
+        }
+
+        // Run immediately when page loads or comes into focus
+        updateCountdown();
+        
+        // Interval ticker
+        setInterval(updateCountdown, 1000);
+
+        // Also force-update instantly if you switch back to the browser tab
+        document.addEventListener("visibilitychange", function() {
+            if (!document.hidden) {
+                updateCountdown();
+            }
+        });
+
+        // Calculate exact mathematical targets based on user MT5 price input
+        function calculateTargets() {
+            const price = parseFloat(document.getElementById('market-price').value);
+            if (isNaN(price)) return;
+
+            const entry = price;
+            const sl = entry - 40.0;   // 400 Pips Risk Buffer (40 Index Points)
+            const tp = entry + 200.0;  // 2,000 Pips Target (200 Index Points)
+
+            document.getElementById('display-entry').innerText = entry.toFixed(2);
+            document.getElementById('display-sl').innerText = sl.toFixed(2);
+            document.getElementById('display-tp').innerText = tp.toFixed(2);
+        }
+
+        calculateTargets();
+    </script>
+</body>
+</html>
